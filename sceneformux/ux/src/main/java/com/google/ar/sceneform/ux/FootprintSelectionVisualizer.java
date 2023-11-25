@@ -15,7 +15,10 @@
  */
 package com.google.ar.sceneform.ux;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
@@ -25,7 +28,8 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
  */
 public class FootprintSelectionVisualizer implements SelectionVisualizer {
   private final Node footprintNode;
-  @Nullable private ModelRenderable footprintRenderable;
+  @androidx.annotation.Nullable
+  private ModelRenderable footprintRenderable;
 
   public FootprintSelectionVisualizer() {
     footprintNode = new Node();
@@ -38,7 +42,7 @@ public class FootprintSelectionVisualizer implements SelectionVisualizer {
     footprintRenderable = copyRenderable;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public ModelRenderable getFootprintRenderable() {
     return footprintRenderable;
   }

@@ -5,7 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.util.Log;
 import com.google.android.filament.IndirectLight;
 import com.google.android.filament.Texture;
@@ -101,17 +105,20 @@ public class LightProbe {
   };
 
   private ByteBuffer cubemapBuffer = ByteBuffer.allocate(10000);
-  @Nullable private Texture reflectCubemap = null;
+  @androidx.annotation.Nullable
+  private Texture reflectCubemap = null;
   private final Color colorCorrection = new Color(1f, 1f, 1f);
   private final Color ambientColor = new Color();
   private float[] irradianceData;
-  @Nullable private String name = null;
+  @androidx.annotation.Nullable
+  private String name = null;
 
   private ChangeId changeId = new ChangeId();
 
   private float intensity;
   private float lightEstimate = 1.0f;
-  @Nullable private Quaternion rotation;
+  @androidx.annotation.Nullable
+  private Quaternion rotation;
 
   /** Constructs a default LightProbe, if nothing else is set */
   public static Builder builder() {
@@ -137,12 +144,12 @@ public class LightProbe {
    *
    * @param rotation the rotation of the indirect light, identity when null
    */
-  public void setRotation(@Nullable Quaternion rotation) {
+  public void setRotation(@androidx.annotation.Nullable Quaternion rotation) {
     this.rotation = rotation;
   }
 
   /** Gets the rotation of the indirect light, identity if null. */
-  @Nullable
+  @androidx.annotation.Nullable
   public Quaternion getRotation() {
     return rotation;
   }
@@ -157,7 +164,7 @@ public class LightProbe {
   }
 
   /** @hide */
-  @Nullable
+  @androidx.annotation.Nullable
   com.google.android.filament.IndirectLight buildIndirectLight() {
     Preconditions.checkNotNull(irradianceData, "\"irradianceData\" was null.");
     Preconditions.checkState(
@@ -342,7 +349,7 @@ public class LightProbe {
             throw new IllegalArgumentException("Invalid source.");
           }
 
-          @Nullable ByteBuffer assetData = null;
+          @androidx.annotation.Nullable ByteBuffer assetData = null;
 
           // Open and read the texture file.
           try (InputStream inputStream = inputStreamCreator.call()) {
@@ -407,18 +414,21 @@ public class LightProbe {
   @SuppressWarnings("AndroidApiChecker") // java.util.concurrent.CompletableFuture
   public static final class Builder {
     /** The {@link LightProbe} will be constructed from the contents of this callable */
-    @Nullable private Callable<InputStream> inputStreamCreator = null;
+    @androidx.annotation.Nullable
+    private Callable<InputStream> inputStreamCreator = null;
 
     /** intensity of the indirect lighting */
     private float intensity = 220.0f;
 
-    @Nullable private Quaternion rotation;
+    @androidx.annotation.Nullable
+    private Quaternion rotation;
 
     /**
      * Name of the Light Probe to load if the file contains more than one. If no name is specified
      * than the first Light Probe found will be used.
      */
-    @Nullable private String name = null;
+    @androidx.annotation.Nullable
+    private String name = null;
 
     /** Constructor for asynchronous building. */
     private Builder() {}
@@ -438,7 +448,7 @@ public class LightProbe {
      *
      * @param rotation the rotation of the indirect light, identity when null
      */
-    public Builder setRotation(@Nullable Quaternion rotation) {
+    public Builder setRotation(@androidx.annotation.Nullable Quaternion rotation) {
       this.rotation = rotation;
       return this;
     }
@@ -501,7 +511,7 @@ public class LightProbe {
         throw new IllegalStateException("Light Probe source is NULL, this should never happen.");
       }
 
-      @Nullable LightProbe lightProbe = new LightProbe(this);
+      @androidx.annotation.Nullable LightProbe lightProbe = new LightProbe(this);
       CompletableFuture<LightProbe> result =
           lightProbe
               .loadInBackground(inputStreamCreator)

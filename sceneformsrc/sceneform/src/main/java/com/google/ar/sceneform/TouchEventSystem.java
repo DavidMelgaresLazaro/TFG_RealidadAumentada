@@ -1,6 +1,9 @@
 package com.google.ar.sceneform;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.view.MotionEvent;
 import com.google.ar.sceneform.Scene.OnPeekTouchListener;
 import com.google.ar.sceneform.utilities.Preconditions;
@@ -49,17 +52,21 @@ public class TouchEventSystem {
     public int pointerIdBits;
 
     // The next target in the target list.
-    @Nullable public TouchTarget next;
+    @androidx.annotation.Nullable
+    public TouchTarget next;
   }
 
-  @Nullable private Scene.OnTouchListener onTouchListener;
+  @androidx.annotation.Nullable
+  private Scene.OnTouchListener onTouchListener;
   private final ArrayList<OnPeekTouchListener> onPeekTouchListeners = new ArrayList<>();
 
   // The touch listener that is handling the current gesture.
-  @Nullable private Scene.OnTouchListener handlingTouchListener = null;
+  @androidx.annotation.Nullable
+  private Scene.OnTouchListener handlingTouchListener = null;
 
   // Linked list of nodes that are currently handling touches for a set of pointers.
-  @Nullable private TouchTarget firstHandlingTouchTarget = null;
+  @androidx.annotation.Nullable
+  private TouchTarget firstHandlingTouchTarget = null;
 
   public TouchEventSystem() {}
 
@@ -69,7 +76,7 @@ public class TouchEventSystem {
    * @see #setOnTouchListener(Scene.OnTouchListener)
    * @return the attached touch listener
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public Scene.OnTouchListener getOnTouchListener() {
     return onTouchListener;
   }
@@ -81,7 +88,7 @@ public class TouchEventSystem {
    *
    * @param onTouchListener the touch listener to attach
    */
-  public void setOnTouchListener(@Nullable Scene.OnTouchListener onTouchListener) {
+  public void setOnTouchListener(@androidx.annotation.Nullable Scene.OnTouchListener onTouchListener) {
     this.onTouchListener = onTouchListener;
   }
 
@@ -267,7 +274,7 @@ public class TouchEventSystem {
     }
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   private TouchTarget getTouchTargetForNode(Node node) {
     for (TouchTarget target = firstHandlingTouchTarget; target != null; target = target.next) {
       if (target.node == node) {
@@ -277,7 +284,7 @@ public class TouchEventSystem {
     return null;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   private Node dispatchTouchEvent(
       MotionEvent motionEvent,
       HitTestResult hitTestResult,

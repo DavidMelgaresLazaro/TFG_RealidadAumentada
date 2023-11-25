@@ -1,7 +1,11 @@
 package com.google.ar.sceneform.rendering;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.util.Log;
 import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.TextureSampler;
@@ -54,7 +58,8 @@ import java.util.concurrent.CompletionException;
 class LoadRenderableFromSfbTask<T extends Renderable> {
   private static class ModelTexture {
     String name;
-    @Nullable Texture data;
+    @androidx.annotation.Nullable
+    Texture data;
 
     ModelTexture(String name) {
       this.name = name;
@@ -65,7 +70,8 @@ class LoadRenderableFromSfbTask<T extends Renderable> {
   private static final String TAG = LoadRenderableFromSfbTask.class.getSimpleName();
   private final T renderable;
   private final RenderableInternalData renderableData;
-  @Nullable private final Uri renderableUri;
+  @androidx.annotation.Nullable
+  private final Uri renderableUri;
 
   private ModelDef modelDef;
   private ModelInstanceDef modelInstanceDef;
@@ -92,7 +98,7 @@ class LoadRenderableFromSfbTask<T extends Renderable> {
   private static final int BYTES_PER_SHORT = 2;
   private static final int BYTES_PER_INT = 4;
 
-  LoadRenderableFromSfbTask(T renderable, @Nullable Uri renderableUri) {
+  LoadRenderableFromSfbTask(T renderable, @androidx.annotation.Nullable Uri renderableUri) {
     this.renderable = renderable;
     IRenderableInternalData data = renderable.getRenderableData();
     if (data instanceof RenderableInternalData) {
@@ -608,7 +614,7 @@ class LoadRenderableFromSfbTask<T extends Renderable> {
     return sfb;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   private Texture getTextureByName(String name) {
     for (int t = 0; t < textureCount; ++t) {
       if (Objects.equals(name, textures.get(t).name)) {
@@ -656,7 +662,7 @@ class LoadRenderableFromSfbTask<T extends Renderable> {
         || attributeUsage == VertexAttributeUsage.BoneWeights;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   private static VertexBuffer.VertexAttribute getFilamentVertexAttribute(int attributeUsage) {
     VertexBuffer.VertexAttribute filamentAttribute;
     switch (attributeUsage) {

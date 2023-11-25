@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.collision;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.sceneform.common.TransformProvider;
 import com.google.ar.sceneform.utilities.ChangeId;
 import com.google.ar.sceneform.utilities.Preconditions;
@@ -13,10 +16,12 @@ import com.google.ar.sceneform.utilities.Preconditions;
  */
 public class Collider {
   private TransformProvider transformProvider;
-  @Nullable private CollisionSystem attachedCollisionSystem;
+  @androidx.annotation.Nullable
+  private CollisionSystem attachedCollisionSystem;
 
   private CollisionShape localShape;
-  @Nullable private CollisionShape cachedWorldShape;
+  @androidx.annotation.Nullable
+  private CollisionShape cachedWorldShape;
 
   private boolean isWorldShapeDirty;
   private int shapeId = ChangeId.EMPTY_ID;
@@ -49,14 +54,14 @@ public class Collider {
   }
 
   /** @hide */
-  @Nullable
+  @androidx.annotation.Nullable
   public CollisionShape getTransformedShape() {
     updateCachedWorldShape();
     return cachedWorldShape;
   }
 
   /** @hide */
-  public void setAttachedCollisionSystem(@Nullable CollisionSystem collisionSystem) {
+  public void setAttachedCollisionSystem(@androidx.annotation.Nullable CollisionSystem collisionSystem) {
     if (attachedCollisionSystem != null) {
       attachedCollisionSystem.removeCollider(this);
     }

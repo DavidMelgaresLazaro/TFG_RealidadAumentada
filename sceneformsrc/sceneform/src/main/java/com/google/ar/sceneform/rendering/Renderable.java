@@ -2,9 +2,11 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 
 import com.google.ar.sceneform.collision.Box;
@@ -41,7 +43,8 @@ public abstract class Renderable {
   private int renderPriority = RENDER_PRIORITY_DEFAULT;
   private boolean isShadowCaster = true;
   private boolean isShadowReceiver = true;
-  @Nullable protected CollisionShape collisionShape;
+  @androidx.annotation.Nullable
+  protected CollisionShape collisionShape;
 
   private final ChangeId changeId = new ChangeId();
 
@@ -97,12 +100,12 @@ public abstract class Renderable {
   }
 
   /** Get the {@link CollisionShape} used for collision detection with this {@link Renderable}. */
-  public @Nullable CollisionShape getCollisionShape() {
+  public @androidx.annotation.Nullable CollisionShape getCollisionShape() {
     return collisionShape;
   }
 
   /** Set the {@link CollisionShape} used for collision detection with this {@link Renderable}. */
-  public void setCollisionShape(@Nullable CollisionShape collisionShape) {
+  public void setCollisionShape(@androidx.annotation.Nullable CollisionShape collisionShape) {
     this.collisionShape = collisionShape;
     changeId.update();
   }
@@ -297,18 +300,26 @@ public abstract class Renderable {
   @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"}) // CompletableFuture
   abstract static class Builder<T extends Renderable, B extends Builder<T, B>> {
     /** @hide */
-    @Nullable protected Object registryId = null;
+    @androidx.annotation.Nullable
+    protected Object registryId = null;
     /** @hide */
-    @Nullable protected Context context = null;
+    @androidx.annotation.Nullable
+    protected Context context = null;
 
-    @Nullable private Uri sourceUri = null;
-    @Nullable private Callable<InputStream> inputStreamCreator = null;
-    @Nullable private RenderableDefinition definition = null;
+    @androidx.annotation.Nullable
+    private Uri sourceUri = null;
+    @androidx.annotation.Nullable
+    private Callable<InputStream> inputStreamCreator = null;
+    @androidx.annotation.Nullable
+    private RenderableDefinition definition = null;
     private boolean isGltf = false;
     private boolean isFilamentAsset = false;
-    @Nullable private LoadGltfListener loadGltfListener;
-    @Nullable private Function<String, Uri> uriResolver = null;
-    @Nullable private byte[] materialsBytes = null;
+    @androidx.annotation.Nullable
+    private LoadGltfListener loadGltfListener;
+    @androidx.annotation.Nullable
+    private Function<String, Uri> uriResolver = null;
+    @androidx.annotation.Nullable
+    private byte[] materialsBytes = null;
 
     /** Used to programmatically construct a {@link Renderable}. */
     protected Builder() {}
@@ -348,7 +359,7 @@ public abstract class Renderable {
       return getSelf();
     }
 
-    public B setRegistryId(@Nullable Object registryId) {
+    public B setRegistryId(@androidx.annotation.Nullable Object registryId) {
       this.registryId = registryId;
       return getSelf();
     }
@@ -493,7 +504,7 @@ public abstract class Renderable {
 
     
     private CompletableFuture<T> loadRenderableFromGltf(
-        @NonNull Context context, T renderable, @Nullable byte[] materialsBytes) {return null;}
+            @androidx.annotation.NonNull Context context, T renderable, @androidx.annotation.Nullable byte[] materialsBytes) {return null;}
 
 
 
@@ -502,7 +513,7 @@ public abstract class Renderable {
 
 
     private CompletableFuture<T> loadRenderableFromFilamentGltf(
-        @NonNull Context context, T renderable) {
+            @androidx.annotation.NonNull Context context, T renderable) {
       LoadRenderableFromFilamentGltfTask<T> loader =
           new LoadRenderableFromFilamentGltfTask<>(
               renderable, context, Preconditions.checkNotNull(sourceUri), uriResolver);

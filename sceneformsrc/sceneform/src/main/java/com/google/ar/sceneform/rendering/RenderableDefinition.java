@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.IndexBuffer.Builder.IndexType;
 import com.google.android.filament.VertexBuffer;
@@ -35,7 +38,8 @@ public class RenderableDefinition {
   public static class Submesh {
     private List<Integer> triangleIndices;
     private Material material;
-    @Nullable private String name;
+    @androidx.annotation.Nullable
+    private String name;
 
     public void setTriangleIndices(List<Integer> triangleIndices) {
       this.triangleIndices = triangleIndices;
@@ -57,7 +61,7 @@ public class RenderableDefinition {
       this.name = name;
     }
 
-    @Nullable
+    @androidx.annotation.Nullable
     public String getName() {
       return name;
     }
@@ -74,9 +78,12 @@ public class RenderableDefinition {
 
     /** Factory class for {@link Submesh}. */
     public static final class Builder {
-      @Nullable private List<Integer> triangleIndices;
-      @Nullable private Material material;
-      @Nullable private String name;
+      @androidx.annotation.Nullable
+      private List<Integer> triangleIndices;
+      @androidx.annotation.Nullable
+      private Material material;
+      @androidx.annotation.Nullable
+      private String name;
 
       public Builder setTriangleIndices(List<Integer> triangleIndices) {
         this.triangleIndices = triangleIndices;
@@ -516,8 +523,10 @@ public class RenderableDefinition {
 
   /** Factory class for {@link RenderableDefinition}. */
   public static final class Builder {
-    @Nullable private List<Vertex> vertices;
-    @Nullable private List<Submesh> submeshes = new ArrayList<>();
+    @androidx.annotation.Nullable
+    private List<Vertex> vertices;
+    @androidx.annotation.Nullable
+    private List<Submesh> submeshes = new ArrayList<>();
 
     public Builder setVertices(List<Vertex> vertices) {
       this.vertices = vertices;

@@ -1,7 +1,10 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+
 import android.util.Log;
 import com.google.android.filament.Box;
 import com.google.android.filament.Entity;
@@ -45,15 +48,22 @@ class RenderableInternalData implements IRenderableInternalData {
   private final Vector3 transformOffset = Vector3.zero();
 
   // Raw buffers.
-  @Nullable private IntBuffer rawIndexBuffer;
-  @Nullable private FloatBuffer rawPositionBuffer;
-  @Nullable private FloatBuffer rawTangentsBuffer;
-  @Nullable private FloatBuffer rawUvBuffer;
-  @Nullable private FloatBuffer rawColorBuffer;
+  @androidx.annotation.Nullable
+  private IntBuffer rawIndexBuffer;
+  @androidx.annotation.Nullable
+  private FloatBuffer rawPositionBuffer;
+  @androidx.annotation.Nullable
+  private FloatBuffer rawTangentsBuffer;
+  @androidx.annotation.Nullable
+  private FloatBuffer rawUvBuffer;
+  @androidx.annotation.Nullable
+  private FloatBuffer rawColorBuffer;
 
   // Filament Geometry buffers.
-  @Nullable private IndexBuffer indexBuffer;
-  @Nullable private VertexBuffer vertexBuffer;
+  @androidx.annotation.Nullable
+  private IndexBuffer indexBuffer;
+  @androidx.annotation.Nullable
+  private VertexBuffer vertexBuffer;
 
   // Represents the set of meshes to render.
   private final ArrayList<MeshData> meshes = new ArrayList<>();
@@ -113,78 +123,78 @@ class RenderableInternalData implements IRenderableInternalData {
   }
 
   @Override
-  public void setIndexBuffer(@Nullable IndexBuffer indexBuffer) {
+  public void setIndexBuffer(@androidx.annotation.Nullable IndexBuffer indexBuffer) {
     this.indexBuffer = indexBuffer;
   }
 
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public IndexBuffer getIndexBuffer() {
     return indexBuffer;
   }
 
   @Override
-  public void setVertexBuffer(@Nullable VertexBuffer vertexBuffer) {
+  public void setVertexBuffer(@androidx.annotation.Nullable VertexBuffer vertexBuffer) {
     this.vertexBuffer = vertexBuffer;
   }
 
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public VertexBuffer getVertexBuffer() {
     return vertexBuffer;
   }
 
   @Override
-  public void setRawIndexBuffer(@Nullable IntBuffer rawIndexBuffer) {
+  public void setRawIndexBuffer(@androidx.annotation.Nullable IntBuffer rawIndexBuffer) {
     this.rawIndexBuffer = rawIndexBuffer;
   }
 
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public IntBuffer getRawIndexBuffer() {
     return rawIndexBuffer;
   }
 
   @Override
-  public void setRawPositionBuffer(@Nullable FloatBuffer rawPositionBuffer) {
+  public void setRawPositionBuffer(@androidx.annotation.Nullable FloatBuffer rawPositionBuffer) {
     this.rawPositionBuffer = rawPositionBuffer;
   }
 
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public FloatBuffer getRawPositionBuffer() {
     return rawPositionBuffer;
   }
 
   @Override
-  public void setRawTangentsBuffer(@Nullable FloatBuffer rawTangentsBuffer) {
+  public void setRawTangentsBuffer(@androidx.annotation.Nullable FloatBuffer rawTangentsBuffer) {
     this.rawTangentsBuffer = rawTangentsBuffer;
   }
 
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public FloatBuffer getRawTangentsBuffer() {
     return rawTangentsBuffer;
   }
 
   @Override
-  public void setRawUvBuffer(@Nullable FloatBuffer rawUvBuffer) {
+  public void setRawUvBuffer(@androidx.annotation.Nullable FloatBuffer rawUvBuffer) {
     this.rawUvBuffer = rawUvBuffer;
   }
 
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public FloatBuffer getRawUvBuffer() {
     return rawUvBuffer;
   }
 
   @Override
-  public void setRawColorBuffer(@Nullable FloatBuffer rawColorBuffer) {
+  public void setRawColorBuffer(@androidx.annotation.Nullable FloatBuffer rawColorBuffer) {
     this.rawColorBuffer = rawColorBuffer;
   }
 
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public FloatBuffer getRawColorBuffer() {
     return rawColorBuffer;
   }
@@ -248,8 +258,8 @@ class RenderableInternalData implements IRenderableInternalData {
     for (int mesh = 0; mesh < meshCount; ++mesh) {
       // Update the geometry assigned to the filament renderable.
       RenderableInternalData.MeshData meshData = renderableData.getMeshes().get(mesh);
-      @Nullable VertexBuffer vertexBuffer = renderableData.getVertexBuffer();
-      @Nullable IndexBuffer indexBuffer = renderableData.getIndexBuffer();
+      @androidx.annotation.Nullable VertexBuffer vertexBuffer = renderableData.getVertexBuffer();
+      @androidx.annotation.Nullable IndexBuffer indexBuffer = renderableData.getIndexBuffer();
       if (vertexBuffer == null || indexBuffer == null) {
         throw new AssertionError("Internal Error: Failed to get vertex or index buffer");
       }

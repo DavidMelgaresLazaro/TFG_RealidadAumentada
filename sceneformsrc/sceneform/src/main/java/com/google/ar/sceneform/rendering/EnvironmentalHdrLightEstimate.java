@@ -2,7 +2,11 @@ package com.google.ar.sceneform.rendering;
 
 import android.media.Image;
 import android.media.Image.Plane;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.core.annotations.UsedByReflection;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -64,11 +68,11 @@ public class EnvironmentalHdrLightEstimate implements Serializable {
   }
 
   @UsedByReflection("EnvironmentalHdrLightEstimate.java")
-  @Nullable
+  @androidx.annotation.Nullable
   private final float[] sphericalHarmonics;
 
   @UsedByReflection("EnvironmentalHdrLightEstimate.java")
-  @Nullable
+  @androidx.annotation.Nullable
   private final float[] direction;
 
   @UsedByReflection("EnvironmentalHdrLightEstimate.java")
@@ -87,7 +91,7 @@ public class EnvironmentalHdrLightEstimate implements Serializable {
   private final float relativeIntensity;
 
   @UsedByReflection("EnvironmentalHdrLightEstimate.java")
-  @Nullable
+  @androidx.annotation.Nullable
   private final CubeMapImage[] cubeMap;
 
   // incompatible types in argument.
@@ -97,11 +101,11 @@ public class EnvironmentalHdrLightEstimate implements Serializable {
     "nullness:assignment.type.incompatible"
   })
   public EnvironmentalHdrLightEstimate(
-      @Nullable float[] sphericalHarmonics,
-      @Nullable float[] direction,
+      @androidx.annotation.Nullable float[] sphericalHarmonics,
+      @androidx.annotation.Nullable float[] direction,
       Color colorCorrection,
       float relativeIntensity,
-      @Nullable Image[] cubeMap) {
+      @androidx.annotation.Nullable Image[] cubeMap) {
     if (sphericalHarmonics != null) {
       this.sphericalHarmonics = new float[sphericalHarmonics.length];
       System.arraycopy(
@@ -130,12 +134,12 @@ public class EnvironmentalHdrLightEstimate implements Serializable {
     }
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public float[] getSphericalHarmonics() {
     return sphericalHarmonics;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public float[] getDirection() {
     return direction;
   }
@@ -150,7 +154,7 @@ public class EnvironmentalHdrLightEstimate implements Serializable {
 
   // incompatible types in return.
   @SuppressWarnings("nullness:return.type.incompatible")
-  @Nullable
+  @androidx.annotation.Nullable
   public CubeMapImage[] getCubeMap() {
     return cubeMap;
   }

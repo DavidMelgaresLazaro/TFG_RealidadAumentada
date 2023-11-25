@@ -1,7 +1,11 @@
 package com.google.ar.sceneform.utilities;
 
 import android.content.res.AssetManager;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,7 +26,7 @@ public final class SceneformBufferUtils {
 
   private SceneformBufferUtils() {}
 
-  @Nullable
+  @androidx.annotation.Nullable
   public static ByteBuffer readFile(AssetManager assets, String path) {
     // TODO: this method/class may be replaceable by SourceBytes
     InputStream inputStream = null;
@@ -46,8 +50,8 @@ public final class SceneformBufferUtils {
     return buffer;
   }
 
-  @Nullable
-  public static ByteBuffer readStream(@Nullable InputStream inputStream) {
+  @androidx.annotation.Nullable
+  public static ByteBuffer readStream(@androidx.annotation.Nullable InputStream inputStream) {
     // TODO: this method/class may be replaceable by SourceBytes
     ByteBuffer buffer = null;
     if (inputStream == null) {

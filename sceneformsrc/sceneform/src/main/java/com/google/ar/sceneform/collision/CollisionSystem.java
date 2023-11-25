@@ -1,6 +1,10 @@
 package com.google.ar.sceneform.collision;
 
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.sceneform.utilities.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +33,7 @@ public class CollisionSystem {
     colliders.remove(collider);
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public Collider raycast(Ray ray, RayHit resultHit) {
     Preconditions.checkNotNull(ray, "Parameter \"ray\" was null.");
     Preconditions.checkNotNull(resultHit, "Parameter \"resultHit\" was null.");
@@ -58,7 +62,7 @@ public class CollisionSystem {
   public <T extends RayHit> int raycastAll(
       Ray ray,
       ArrayList<T> resultBuffer,
-      @Nullable BiConsumer<T, Collider> processResult,
+      @androidx.annotation.Nullable BiConsumer<T, Collider> processResult,
       Supplier<T> allocateResult) {
     Preconditions.checkNotNull(ray, "Parameter \"ray\" was null.");
     Preconditions.checkNotNull(resultBuffer, "Parameter \"resultBuffer\" was null.");
@@ -104,7 +108,7 @@ public class CollisionSystem {
     return hitCount;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public Collider intersects(Collider collider) {
     Preconditions.checkNotNull(collider, "Parameter \"collider\" was null.");
 

@@ -5,7 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.graphics.PorterDuff;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.view.Surface;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -43,7 +47,8 @@ class RenderViewToExternalTexture extends LinearLayout {
   private final Picture picture = new Picture();
   private boolean hasDrawnToSurfaceTexture = false;
 
-  @Nullable private ViewAttachmentManager viewAttachmentManager;
+  @androidx.annotation.Nullable
+  private ViewAttachmentManager viewAttachmentManager;
   private final ArrayList<OnViewSizeChangedListener> onViewSizeChangedListeners = new ArrayList<>();
 
   @SuppressWarnings("initialization") // Suppress @UnderInitialization warning.

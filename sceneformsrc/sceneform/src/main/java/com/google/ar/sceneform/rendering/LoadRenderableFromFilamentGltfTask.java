@@ -2,8 +2,12 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+
 import com.google.android.filament.gltfio.ResourceLoader;
 import com.google.ar.sceneform.utilities.Preconditions;
 import com.google.ar.sceneform.utilities.SceneformBufferUtils;
@@ -23,7 +27,7 @@ public class LoadRenderableFromFilamentGltfTask<T extends Renderable> {
   private final RenderableInternalFilamentAssetData renderableData;
 
   LoadRenderableFromFilamentGltfTask(
-      T renderable, Context context, Uri sourceUri, @Nullable Function<String, Uri> urlResolver) {
+      T renderable, Context context, Uri sourceUri, @androidx.annotation.Nullable Function<String, Uri> urlResolver) {
     this.renderable = renderable;
     IRenderableInternalData data = renderable.getRenderableData();
     if (data instanceof RenderableInternalFilamentAssetData) {
@@ -68,11 +72,11 @@ public class LoadRenderableFromFilamentGltfTask<T extends Renderable> {
             ThreadPools.getMainExecutor());
   }
 
-  @NonNull
+  @androidx.annotation.NonNull
   static Uri getUriFromMissingResource(
-      @NonNull Uri parentUri,
-      @NonNull String missingResource,
-      @Nullable Function<String, Uri> urlResolver) {
+      @androidx.annotation.NonNull Uri parentUri,
+      @androidx.annotation.NonNull String missingResource,
+      @androidx.annotation.Nullable Function<String, Uri> urlResolver) {
 
     if (urlResolver != null) {
       return urlResolver.apply(missingResource);

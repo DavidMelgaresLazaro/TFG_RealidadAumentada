@@ -1,6 +1,8 @@
 package com.google.ar.sceneform.utilities;
 
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
 
 /**
  * Static convenience methods that help a method or constructor check whether it was invoked
@@ -17,7 +19,7 @@ public class Preconditions {
    * @param reference an object reference
    * @throws NullPointerException if {@code reference} is null
    */
-  public static <T> T checkNotNull(@Nullable T reference) {
+  public static <T> T checkNotNull(@androidx.annotation.Nullable T reference) {
     if (reference == null) {
       throw new NullPointerException();
     }
@@ -33,7 +35,7 @@ public class Preconditions {
    *     string using {@link String#valueOf(Object)}
    * @throws NullPointerException if {@code reference} is null
    */
-  public static <T> T checkNotNull(@Nullable T reference, Object errorMessage) {
+  public static <T> T checkNotNull(@androidx.annotation.Nullable T reference, Object errorMessage) {
     if (reference == null) {
       throw new NullPointerException(String.valueOf(errorMessage));
     }
@@ -93,7 +95,7 @@ public class Preconditions {
    *     string using {@link String#valueOf(Object)}
    * @throws IllegalStateException if {@code expression} is false
    */
-  public static void checkState(boolean expression, @Nullable Object errorMessage) {
+  public static void checkState(boolean expression, @androidx.annotation.Nullable Object errorMessage) {
     if (!expression) {
       throw new IllegalStateException(String.valueOf(errorMessage));
     }

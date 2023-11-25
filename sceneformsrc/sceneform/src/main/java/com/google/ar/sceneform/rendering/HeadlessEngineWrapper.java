@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.NonNull;
+//change to androidx
+import androidx.annotation.NonNull;
+
+
 import com.google.android.filament.Engine;
 import com.google.android.filament.NativeSurface;
 import com.google.android.filament.SwapChain;
@@ -48,11 +51,11 @@ public class HeadlessEngineWrapper extends FilamentEngineWrapper {
   }
 
   @Override
-  public SwapChain createSwapChain(@NonNull Object surface) {
+  public SwapChain createSwapChain(@androidx.annotation.NonNull Object surface) {
     try {
       Long nativeEngineHandle = (Long) getNativeEngineMethod.invoke(engine);
       @SuppressWarnings("nullness:assignment.type.incompatible") // b/140537868
-      @NonNull
+      @androidx.annotation.NonNull
       Object fakeSurface = null;
       return swapChainInit.newInstance(
           nCreateSwiftShaderSwapChain(Preconditions.checkNotNull(nativeEngineHandle), 0),
@@ -63,11 +66,11 @@ public class HeadlessEngineWrapper extends FilamentEngineWrapper {
   }
 
   @Override
-  public SwapChain createSwapChain(@NonNull Object surface, long flags) {
+  public SwapChain createSwapChain(@androidx.annotation.NonNull Object surface, long flags) {
     try {
       Long nativeEngineHandle = (Long) getNativeEngineMethod.invoke(engine);
       @SuppressWarnings("nullness:assignment.type.incompatible") // b/140537868
-      @NonNull
+      @androidx.annotation.NonNull
       Object fakeSurface = null;
       return swapChainInit.newInstance(
           nCreateSwiftShaderSwapChain(Preconditions.checkNotNull(nativeEngineHandle), flags),
@@ -78,11 +81,11 @@ public class HeadlessEngineWrapper extends FilamentEngineWrapper {
   }
 
   @Override
-  public SwapChain createSwapChainFromNativeSurface(@NonNull NativeSurface surface, long flags) {
+  public SwapChain createSwapChainFromNativeSurface(@androidx.annotation.NonNull NativeSurface surface, long flags) {
     try {
       Long nativeEngineHandle = (Long) getNativeEngineMethod.invoke(engine);
       @SuppressWarnings("nullness:assignment.type.incompatible") // b/140537868
-      @NonNull
+      @androidx.annotation.NonNull
       Object fakeSurface = null;
       return swapChainInit.newInstance(
           nCreateSwiftShaderSwapChain(Preconditions.checkNotNull(nativeEngineHandle), flags),
@@ -93,7 +96,7 @@ public class HeadlessEngineWrapper extends FilamentEngineWrapper {
   }
 
   @Override
-  public void destroySwapChain(@NonNull SwapChain swapChain) {
+  public void destroySwapChain(@androidx.annotation.NonNull SwapChain swapChain) {
     try {
       Long nativeEngineHandle = (Long) getNativeEngineMethod.invoke(engine);
       Long swapChainHandle = (Long) getNativeSwapChainMethod.invoke(swapChain);

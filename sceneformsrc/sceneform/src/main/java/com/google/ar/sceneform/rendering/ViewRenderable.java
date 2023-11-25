@@ -2,8 +2,12 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +61,8 @@ public class ViewRenderable extends Renderable {
     TOP
   }
 
-  @Nullable private ViewRenderableInternalData viewRenderableData;
+  @androidx.annotation.Nullable
+  private ViewRenderableInternalData viewRenderableData;
   private final View view;
 
   // Used to apply a final scale to the renderable that makes it render at an appropriate size based
@@ -68,7 +73,8 @@ public class ViewRenderable extends Renderable {
   private VerticalAlignment verticalAlignment = VerticalAlignment.BOTTOM;
   private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTER;
 
-  @Nullable private Renderer renderer;
+  @androidx.annotation.Nullable
+  private Renderer renderer;
   private boolean isInitialized;
 
   @SuppressWarnings({"initialization"})
@@ -370,7 +376,8 @@ public class ViewRenderable extends Renderable {
   /** Factory class for {@link ViewRenderable} */
   public static final class Builder extends Renderable.Builder<ViewRenderable, Builder> {
     private static final int DEFAULT_DP_TO_METERS = 250;
-    @Nullable private View view;
+    @androidx.annotation.Nullable
+    private View view;
     private ViewSizer viewSizer = new DpToMetersViewSizer(DEFAULT_DP_TO_METERS);
     private VerticalAlignment verticalAlignment = VerticalAlignment.BOTTOM;
     private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTER;

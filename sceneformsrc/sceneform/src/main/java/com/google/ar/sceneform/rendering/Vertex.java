@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.sceneform.math.Vector3;
 
 /**
@@ -27,8 +30,10 @@ public class Vertex {
 
   // Optional.
   @Nullable private Vector3 normal;
-  @Nullable private UvCoordinate uvCoordinate;
-  @Nullable private Color color;
+  @androidx.annotation.Nullable
+  private UvCoordinate uvCoordinate;
+  @androidx.annotation.Nullable
+  private Color color;
 
   public void setPosition(Vector3 position) {
     this.position.set(position);
@@ -38,29 +43,29 @@ public class Vertex {
     return position;
   }
 
-  public void setNormal(@Nullable Vector3 normal) {
+  public void setNormal(@androidx.annotation.Nullable Vector3 normal) {
     this.normal = normal;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public Vector3 getNormal() {
     return normal;
   }
 
-  public void setUvCoordinate(@Nullable UvCoordinate uvCoordinate) {
+  public void setUvCoordinate(@androidx.annotation.Nullable UvCoordinate uvCoordinate) {
     this.uvCoordinate = uvCoordinate;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public UvCoordinate getUvCoordinate() {
     return uvCoordinate;
   }
 
-  public void setColor(@Nullable Color color) {
+  public void setColor(@androidx.annotation.Nullable Color color) {
     this.color = color;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public Color getColor() {
     return color;
   }
@@ -82,26 +87,29 @@ public class Vertex {
     private final Vector3 position = Vector3.zero();
 
     // Optional.
-    @Nullable private Vector3 normal;
-    @Nullable private UvCoordinate uvCoordinate;
-    @Nullable private Color color;
+    @androidx.annotation.Nullable
+    private Vector3 normal;
+    @androidx.annotation.Nullable
+    private UvCoordinate uvCoordinate;
+    @androidx.annotation.Nullable
+    private Color color;
 
     public Builder setPosition(Vector3 position) {
       this.position.set(position);
       return this;
     }
 
-    public Builder setNormal(@Nullable Vector3 normal) {
+    public Builder setNormal(@androidx.annotation.Nullable Vector3 normal) {
       this.normal = normal;
       return this;
     }
 
-    public Builder setUvCoordinate(@Nullable UvCoordinate uvCoordinate) {
+    public Builder setUvCoordinate(@androidx.annotation.Nullable UvCoordinate uvCoordinate) {
       this.uvCoordinate = uvCoordinate;
       return this;
     }
 
-    public Builder setColor(@Nullable Color color) {
+    public Builder setColor(@androidx.annotation.Nullable Color color) {
       this.color = color;
       return this;
     }

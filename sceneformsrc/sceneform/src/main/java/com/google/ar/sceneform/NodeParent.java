@@ -1,7 +1,10 @@
 package com.google.ar.sceneform;
 
-import android.support.annotation.CallSuper;
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
 import java.util.ArrayList;
@@ -107,7 +110,7 @@ public abstract class NodeParent {
    * @return the first node that matches the conditions of the predicate, otherwise null is returned
    */
   @SuppressWarnings("AndroidApiChecker")
-  @Nullable
+  @androidx.annotation.Nullable
   public Node findInHierarchy(Predicate<Node> condition) {
     Preconditions.checkNotNull(condition, "Parameter \"condition\" was null.");
 
@@ -134,7 +137,7 @@ public abstract class NodeParent {
    * @return the node if it's found, otherwise null
    */
   @SuppressWarnings("AndroidApiChecker")
-  @Nullable
+  @androidx.annotation.Nullable
   public Node findByName(String name) {
     if (name == null || name.isEmpty()) {
       return null;

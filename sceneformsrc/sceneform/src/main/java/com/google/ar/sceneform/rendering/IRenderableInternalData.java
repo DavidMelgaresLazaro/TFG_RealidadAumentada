@@ -1,8 +1,12 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.android.filament.Entity;
+
+
 import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.VertexBuffer;
 
@@ -74,9 +78,9 @@ interface IRenderableInternalData {
   @Nullable
   FloatBuffer getRawColorBuffer();
 
-  void setAnimationNames(@NonNull List<String> animationNames);
+  void setAnimationNames(@androidx.annotation.NonNull List<String> animationNames);
 
-  @NonNull
+  @androidx.annotation.NonNull
   List<String> getAnimationNames();
 
   

@@ -2,8 +2,12 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+
 import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.gltfio.MaterialProvider;
@@ -29,7 +33,8 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   Buffer gltfByteBuffer;
   boolean isGltfBinary;
   ResourceLoader resourceLoader;
-  @Nullable Function<String, Uri> urlResolver;
+  @androidx.annotation.Nullable
+  Function<String, Uri> urlResolver;
   static MaterialProvider materialProvider;
 
   static MaterialProvider getMaterialProvider() {
@@ -100,11 +105,11 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setIndexBuffer(@Nullable IndexBuffer indexBuffer) {
+  public void setIndexBuffer(@androidx.annotation.Nullable IndexBuffer indexBuffer) {
     // Not Implemented
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   @Override
   public IndexBuffer getIndexBuffer() {
     // Not Implemented
@@ -112,11 +117,11 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setVertexBuffer(@Nullable VertexBuffer vertexBuffer) {
+  public void setVertexBuffer(@androidx.annotation.Nullable VertexBuffer vertexBuffer) {
     // Not Implemented
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   @Override
   public VertexBuffer getVertexBuffer() {
     // Not Implemented
@@ -124,11 +129,11 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setRawIndexBuffer(@Nullable IntBuffer rawIndexBuffer) {
+  public void setRawIndexBuffer(@androidx.annotation.Nullable IntBuffer rawIndexBuffer) {
     // Not Implemented
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   @Override
   public IntBuffer getRawIndexBuffer() {
     // Not Implemented
@@ -136,11 +141,11 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setRawPositionBuffer(@Nullable FloatBuffer rawPositionBuffer) {
+  public void setRawPositionBuffer(@androidx.annotation.Nullable FloatBuffer rawPositionBuffer) {
     // Not Implemented
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   @Override
   public FloatBuffer getRawPositionBuffer() {
     // Not Implemented
@@ -148,11 +153,11 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setRawTangentsBuffer(@Nullable FloatBuffer rawTangentsBuffer) {
+  public void setRawTangentsBuffer(@androidx.annotation.Nullable FloatBuffer rawTangentsBuffer) {
     // Not Implemented
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   @Override
   public FloatBuffer getRawTangentsBuffer() {
     // Not Implemented
@@ -160,11 +165,11 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setRawUvBuffer(@Nullable FloatBuffer rawUvBuffer) {
+  public void setRawUvBuffer(@androidx.annotation.Nullable FloatBuffer rawUvBuffer) {
     // Not Implemented
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   @Override
   public FloatBuffer getRawUvBuffer() {
     // Not Implemented
@@ -172,11 +177,11 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setRawColorBuffer(@Nullable FloatBuffer rawColorBuffer) {
+  public void setRawColorBuffer(@androidx.annotation.Nullable FloatBuffer rawColorBuffer) {
     // Not Implemented
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   @Override
   public FloatBuffer getRawColorBuffer() {
     // Not Implemented
@@ -184,12 +189,12 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   }
 
   @Override
-  public void setAnimationNames(@NonNull List<String> animationNames) {
+  public void setAnimationNames(@androidx.annotation.NonNull List<String> animationNames) {
     // Not Implemented
   }
 
   @Override
-  @NonNull
+  @androidx.annotation.NonNull
   public List<String> getAnimationNames() {
     // Not Implemented
     return new ArrayList<>();

@@ -1,7 +1,11 @@
 package com.google.ar.sceneform.rendering;
 
 import android.opengl.EGLContext;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.android.filament.Engine;
 import com.google.android.filament.Filament;
 import com.google.android.filament.gltfio.Gltfio;
@@ -15,8 +19,10 @@ import com.google.ar.sceneform.utilities.Preconditions;
  * @hide
  */
 public class EngineInstance {
-  @Nullable private static IEngine engine = null;
-  @Nullable private static EGLContext glContext = null;
+  @androidx.annotation.Nullable
+  private static IEngine engine = null;
+  @androidx.annotation.Nullable
+  private static EGLContext glContext = null;
   private static boolean headlessEngine = false;
   private static boolean filamentInitialized = false;
 

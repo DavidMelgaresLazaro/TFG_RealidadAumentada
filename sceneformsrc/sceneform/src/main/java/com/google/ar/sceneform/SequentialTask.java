@@ -1,8 +1,12 @@
 package com.google.ar.sceneform;
 
 import android.annotation.TargetApi;
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -15,7 +19,8 @@ import java.util.concurrent.Executor;
 @TargetApi(24)
 @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
 class SequentialTask {
-  @Nullable private CompletableFuture<Void> future;
+  @androidx.annotation.Nullable
+  private CompletableFuture<Void> future;
 
   /**
    * Appends a new Runnable to the current future, or creates a new one.

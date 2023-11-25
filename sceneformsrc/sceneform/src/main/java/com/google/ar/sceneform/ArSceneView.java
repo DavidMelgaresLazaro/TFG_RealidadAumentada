@@ -3,8 +3,11 @@ package com.google.ar.sceneform;
 import android.content.Context;
 import android.media.Image;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+
+
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -56,9 +59,12 @@ public class ArSceneView extends SceneView {
   private static final float RECREATE_LIGHTING_ANCHOR_DISTANCE = 0.5f;
 
   private int cameraTextureId;
-  @Nullable private Session session;
-  @Nullable private Frame currentFrame;
-  @Nullable private Config cachedConfig;
+  @androidx.annotation.Nullable
+  private Session session;
+  @androidx.annotation.Nullable
+  private Frame currentFrame;
+  @androidx.annotation.Nullable
+  private Config cachedConfig;
   private int minArCoreVersionCode;
 
   private Display display;
@@ -67,14 +73,19 @@ public class ArSceneView extends SceneView {
 
   private boolean lightEstimationEnabled = true;
   private boolean isLightDirectionUpdateEnabled = true;
-  @Nullable private Consumer<EnvironmentalHdrLightEstimate> onNextHdrLightingEstimate = null;
+  @androidx.annotation.Nullable
+  private Consumer<EnvironmentalHdrLightEstimate> onNextHdrLightingEstimate = null;
 
   private float lastValidPixelIntensity = DEFAULT_PIXEL_INTENSITY;
   private final Color lastValidColorCorrection = new Color(DEFAULT_COLOR_CORRECTION);
-  @Nullable private Anchor lastValidEnvironmentalHdrAnchor;
-  @Nullable private float[] lastValidEnvironmentalHdrAmbientSphericalHarmonics;
-  @Nullable private float[] lastValidEnvironmentalHdrMainLightDirection;
-  @Nullable private float[] lastValidEnvironmentalHdrMainLightIntensity;
+  @androidx.annotation.Nullable
+  private Anchor lastValidEnvironmentalHdrAnchor;
+  @androidx.annotation.Nullable
+  private float[] lastValidEnvironmentalHdrAmbientSphericalHarmonics;
+  @androidx.annotation.Nullable
+  private float[] lastValidEnvironmentalHdrMainLightDirection;
+  @androidx.annotation.Nullable
+  private float[] lastValidEnvironmentalHdrMainLightIntensity;
 
   private final float[] colorCorrectionPixelIntensity = new float[4];
 
@@ -381,7 +392,7 @@ public class ArSceneView extends SceneView {
   }
 
   /** Returns the ARCore Session used by this view. */
-  @Nullable
+  @androidx.annotation.Nullable
   public Session getSession() {
     return session;
   }
@@ -391,7 +402,7 @@ public class ArSceneView extends SceneView {
    * of each drawing frame. Callers of this method should not retain a reference to the return
    * value, since it will be invalid to use the ARCore frame starting with the next frame.
    */
-  @Nullable
+  @androidx.annotation.Nullable
   @UiThread
   public Frame getArFrame() {
     return currentFrame;

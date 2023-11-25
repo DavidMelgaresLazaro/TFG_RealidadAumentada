@@ -1,7 +1,10 @@
 package com.google.ar.sceneform.resources;
 
-import android.support.annotation.GuardedBy;
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.sceneform.utilities.Preconditions;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -34,7 +37,7 @@ public class ResourceRegistry<T> implements ResourceHolder {
    * been registered or was garbage collected, returns null. The future may be to a resource that
    * has already finished loading, in which case {@link CompletableFuture#isDone()} will be true.
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public CompletableFuture<T> get(Object id) {
     Preconditions.checkNotNull(id, "Parameter 'id' was null.");
 

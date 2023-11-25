@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.util.Log;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
@@ -173,7 +176,7 @@ public class PlaneRenderer {
     Vector3 focusPoint = getFocusPoint(frame, viewWidth, viewHeight);
 
     @SuppressWarnings("nullness")
-    @Nullable
+    @androidx.annotation.Nullable
     Material planeMaterial = planeMaterialFuture.getNow(null);
     if (planeMaterial != null) {
       planeMaterial.setFloat3(MATERIAL_SPOTLIGHT_FOCUS_POINT, focusPoint);

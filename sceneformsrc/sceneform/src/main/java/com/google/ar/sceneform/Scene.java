@@ -1,8 +1,12 @@
 package com.google.ar.sceneform;
 
 import android.media.Image;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
+
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -87,9 +91,12 @@ public class Scene extends NodeParent {
       EnvironmentalHdrParameters.makeDefault();
 
   private final Camera camera;
-  @Nullable private final Sun sunlightNode;
-  @Nullable private final SceneView view;
-  @Nullable private LightProbe lightProbe;
+  @androidx.annotation.Nullable
+  private final Sun sunlightNode;
+  @androidx.annotation.Nullable
+  private final SceneView view;
+  @androidx.annotation.Nullable
+  private LightProbe lightProbe;
   private boolean lightProbeSet = false;
   private boolean isUnderTesting = false;
 
@@ -157,7 +164,7 @@ public class Scene extends NodeParent {
    *
    * @return the sunlight node used to light the scene
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public Node getSunlight() {
     return sunlightNode;
   }
@@ -204,7 +211,7 @@ public class Scene extends NodeParent {
    *
    * @param onTouchListener the touch listener to attach
    */
-  public void setOnTouchListener(@Nullable OnTouchListener onTouchListener) {
+  public void setOnTouchListener(@androidx.annotation.Nullable OnTouchListener onTouchListener) {
     touchEventSystem.setOnTouchListener(onTouchListener);
   }
 
@@ -361,7 +368,7 @@ public class Scene extends NodeParent {
    *     this is null. If multiple nodes are overlapping the test node, then this could be any of
    *     them.
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public Node overlapTest(Node node) {
     Preconditions.checkNotNull(node, "Parameter \"node\" was null.");
 
@@ -433,11 +440,11 @@ public class Scene extends NodeParent {
   @SuppressWarnings("nullness:argument.type.incompatible")
   
   public void setEnvironmentalHdrLightEstimate(
-      @Nullable float[] sphericalHarmonics,
-      @Nullable float[] direction,
+      @androidx.annotation.Nullable float[] sphericalHarmonics,
+      @androidx.annotation.Nullable float[] direction,
       Color colorCorrection,
       float relativeIntensity,
-      @Nullable Image[] cubeMap) {
+      @androidx.annotation.Nullable Image[] cubeMap) {
     float exposure;
     EnvironmentalHdrParameters hdrParameters;
     if (view == null) {

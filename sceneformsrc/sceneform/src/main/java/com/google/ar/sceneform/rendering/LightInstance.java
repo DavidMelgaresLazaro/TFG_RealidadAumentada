@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.util.Log;
 import com.google.android.filament.Entity;
 import com.google.android.filament.EntityManager;

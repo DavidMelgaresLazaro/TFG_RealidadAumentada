@@ -4,7 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Choreographer;
@@ -26,7 +30,8 @@ import com.google.ar.sceneform.utilities.Preconditions;
 public class SceneView extends SurfaceView implements Choreographer.FrameCallback {
   private static final String TAG = SceneView.class.getSimpleName();
 
-  @Nullable private Renderer renderer = null;
+  @androidx.annotation.Nullable
+  private Renderer renderer = null;
   private final FrameTime frameTime = new FrameTime();
 
   private Scene scene;
@@ -34,7 +39,8 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
 
   private boolean isInitialized = false;
 
-  @Nullable private Color backgroundColor;
+  @androidx.annotation.Nullable
+  private Color backgroundColor;
 
   
 
@@ -111,7 +117,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
    * behavior of {@link SurfaceView#setBackground(Drawable)}.
    */
   @Override
-  public void setBackground(@Nullable Drawable background) {
+  public void setBackground(@androidx.annotation.Nullable Drawable background) {
     if (background instanceof ColorDrawable) {
       ColorDrawable colorDrawable = (ColorDrawable) background;
       backgroundColor = new Color(colorDrawable.getColor());
@@ -221,7 +227,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
    *
    * @hide Not a public facing API for version 1.0
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public Renderer getRenderer() {
     return renderer;
   }

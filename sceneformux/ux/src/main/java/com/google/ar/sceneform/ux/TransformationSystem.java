@@ -15,7 +15,10 @@
  */
 package com.google.ar.sceneform.ux;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import com.google.ar.sceneform.HitTestResult;
@@ -39,7 +42,8 @@ public class TransformationSystem {
 
   private SelectionVisualizer selectionVisualizer;
 
-  @Nullable private BaseTransformableNode selectedNode;
+  @androidx.annotation.Nullable
+  private BaseTransformableNode selectedNode;
 
   @SuppressWarnings("initialization")
   public TransformationSystem(
@@ -128,7 +132,7 @@ public class TransformationSystem {
    * are selected automatically when they are tapped, or when the user begins to translate the node
    * with a drag gesture.
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public BaseTransformableNode getSelectedNode() {
     return selectedNode;
   }
@@ -141,7 +145,7 @@ public class TransformationSystem {
    * @see BaseTransformableNode#isTransforming
    * @return true if the node was successfully selected
    */
-  public boolean selectNode(@Nullable BaseTransformableNode node) {
+  public boolean selectNode(@androidx.annotation.Nullable BaseTransformableNode node) {
     if (!deselectNode()) {
       return false;
     }

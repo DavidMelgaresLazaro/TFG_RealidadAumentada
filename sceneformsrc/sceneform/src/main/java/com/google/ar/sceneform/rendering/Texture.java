@@ -5,8 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+
 import com.google.android.filament.android.TextureHelper;
 
 import com.google.ar.core.annotations.UsedByNative;
@@ -40,7 +44,8 @@ public class Texture {
   // This will make sure that all the mip levels are filled out, down to 1x1.
   private static final int MIP_LEVELS_TO_GENERATE = 0xff;
 
-  @Nullable private final TextureInternalData textureData;
+  @androidx.annotation.Nullable
+  private final TextureInternalData textureData;
 
   /** Constructs a default texture, if nothing else is set */
   public static Builder builder() {
@@ -92,14 +97,18 @@ public class Texture {
   /** Factory class for {@link Texture} */
   public static final class Builder {
     /** The {@link Texture} will be constructed from the contents of this callable */
-    @Nullable private Callable<InputStream> inputStreamCreator = null;
+    @androidx.annotation.Nullable
+    private Callable<InputStream> inputStreamCreator = null;
 
-    @Nullable private Bitmap bitmap = null;
-    @Nullable private TextureInternalData textureInternalData = null;
+    @androidx.annotation.Nullable
+    private Bitmap bitmap = null;
+    @androidx.annotation.Nullable
+    private TextureInternalData textureInternalData = null;
 
     private Usage usage = Usage.COLOR;
     /** Enables reuse through the registry */
-    @Nullable private Object registryId = null;
+    @androidx.annotation.Nullable
+    private Object registryId = null;
 
     private boolean inPremultiplied = true;
 
@@ -270,7 +279,7 @@ public class Texture {
       if (registryId != null) {
         // See if a texture has already been registered by this id, if so re-use it.
         ResourceRegistry<Texture> registry = ResourceManager.getInstance().getTextureRegistry();
-        @Nullable CompletableFuture<Texture> textureFuture = registry.get(registryId);
+        @androidx.annotation.Nullable CompletableFuture<Texture> textureFuture = registry.get(registryId);
         if (textureFuture != null) {
           return textureFuture;
         }

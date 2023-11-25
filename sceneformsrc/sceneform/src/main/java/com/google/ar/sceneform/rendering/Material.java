@@ -3,8 +3,12 @@ package com.google.ar.sceneform.rendering;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+
 import com.google.android.filament.MaterialInstance;
 
 
@@ -26,7 +30,8 @@ public class Material {
   private static final String TAG = Material.class.getSimpleName();
 
   private final MaterialParameters materialParameters = new MaterialParameters();
-  @Nullable private final MaterialInternalData materialData;
+  @androidx.annotation.Nullable
+  private final MaterialInternalData materialData;
   private final IMaterialInstance internalMaterialInstance;
 
   /**
@@ -245,7 +250,7 @@ public class Material {
     }
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public ExternalTexture getExternalTexture(String name) {
     return materialParameters.getExternalTexture(name);
   }
@@ -330,13 +335,16 @@ public class Material {
    */
   public static final class Builder {
     /** The {@link Material} will be constructed from the contents of this buffer */
-    @Nullable ByteBuffer sourceBuffer;
+    @androidx.annotation.Nullable
+    ByteBuffer sourceBuffer;
     /** The {@link Material} will be constructed from the contents of this callable */
-    @Nullable private Callable<InputStream> inputStreamCreator;
+    @androidx.annotation.Nullable
+    private Callable<InputStream> inputStreamCreator;
     /** The {@link Material} will be constructed from an existing filament material. */
     com.google.android.filament.Material existingMaterial;
 
-    @Nullable private Object registryId;
+    @androidx.annotation.Nullable
+    private Object registryId;
 
     /** Constructor for asynchronous building. The sourceBuffer will be read later. */
     private Builder() {}
@@ -459,7 +467,7 @@ public class Material {
       if (registryId != null) {
         // See if a material has already been registered by this id, if so re-use it.
         ResourceRegistry<Material> registry = ResourceManager.getInstance().getMaterialRegistry();
-        @Nullable CompletableFuture<Material> materialFuture = registry.get(registryId);
+        @androidx.annotation.Nullable CompletableFuture<Material> materialFuture = registry.get(registryId);
         if (materialFuture != null) {
           return materialFuture.thenApply(material -> material.makeCopy());
         }
@@ -510,7 +518,7 @@ public class Material {
       CompletableFuture<Material> result =
           CompletableFuture.supplyAsync(
                   () -> {
-                    @Nullable ByteBuffer byteBuffer;
+                    @androidx.annotation.Nullable ByteBuffer byteBuffer;
                     // Open and read the material file.
                     try (InputStream inputStream = inputStreamCallable.call()) {
                       byteBuffer = SceneformBufferUtils.readStream(inputStream);
@@ -629,12 +637,14 @@ public class Material {
 
   /** Cleanup filament objects after garbage collection */
   private static final class CleanupCallback implements Runnable {
-    @Nullable private final MaterialInternalData materialInternalData;
-    @Nullable private final IMaterialInstance materialInstance;
+    @androidx.annotation.Nullable
+    private final MaterialInternalData materialInternalData;
+    @androidx.annotation.Nullable
+    private final IMaterialInstance materialInstance;
 
     CleanupCallback(
-        @Nullable IMaterialInstance materialInstance,
-        @Nullable MaterialInternalData materialInternalData) {
+        @androidx.annotation.Nullable IMaterialInstance materialInstance,
+        @androidx.annotation.Nullable MaterialInternalData materialInternalData) {
       this.materialInstance = materialInstance;
       this.materialInternalData = materialInternalData;
     }

@@ -25,11 +25,9 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
+
+
+
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,6 +38,15 @@ import android.view.ViewTreeObserver.OnWindowFocusChangeListener;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
+
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
@@ -105,7 +112,8 @@ public abstract class BaseArFragment extends Fragment
   private FrameLayout frameLayout;
   private boolean isStarted;
   private boolean canRequestDangerousPermissions = true;
-  @Nullable private OnSessionInitializationListener onSessionInitializationListener;
+  @Nullable
+  private OnSessionInitializationListener onSessionInitializationListener;
   @Nullable private OnTapArPlaneListener onTapArPlaneListener;
 
   @SuppressWarnings({"initialization"})

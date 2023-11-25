@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.core.Plane;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.common.TransformProvider;
@@ -26,14 +29,18 @@ class PlaneVisualizer implements TransformProvider {
   private boolean isShadowReceiver = false;
   private boolean isVisible = false;
 
-  @Nullable private ModelRenderable planeRenderable = null;
-  @Nullable private RenderableInstance planeRenderableInstance;
+  @androidx.annotation.Nullable
+  private ModelRenderable planeRenderable = null;
+  @androidx.annotation.Nullable
+  private RenderableInstance planeRenderableInstance;
 
   private final ArrayList<Vertex> vertices = new ArrayList<>();
   private final ArrayList<Integer> triangleIndices = new ArrayList<>();
   private final RenderableDefinition renderableDefinition;
-  @Nullable private Submesh planeSubmesh;
-  @Nullable private Submesh shadowSubmesh;
+  @androidx.annotation.Nullable
+  private Submesh planeSubmesh;
+  @androidx.annotation.Nullable
+  private Submesh shadowSubmesh;
 
   private static final int VERTS_PER_BOUNDARY_VERT = 2;
 

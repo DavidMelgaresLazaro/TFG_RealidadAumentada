@@ -1,6 +1,10 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.ar.sceneform.collision.Box;
 import com.google.ar.sceneform.collision.CollisionShape;
 import com.google.ar.sceneform.collision.Sphere;
@@ -32,7 +36,7 @@ public final class SceneformBundle {
     }
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   public static SceneformBundleDef tryLoadSceneformBundle(ByteBuffer buffer)
       throws VersionException {
 

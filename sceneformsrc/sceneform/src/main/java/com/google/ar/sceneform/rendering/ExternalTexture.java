@@ -1,7 +1,11 @@
 package com.google.ar.sceneform.rendering;
 
 import android.graphics.SurfaceTexture;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.view.Surface;
 import com.google.android.filament.Stream;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
@@ -20,11 +24,15 @@ import com.google.ar.sceneform.utilities.Preconditions;
 public class ExternalTexture {
   private static final String TAG = ExternalTexture.class.getSimpleName();
 
-  @Nullable private final SurfaceTexture surfaceTexture;
-  @Nullable private final Surface surface;
+  @androidx.annotation.Nullable
+  private final SurfaceTexture surfaceTexture;
+  @androidx.annotation.Nullable
+  private final Surface surface;
 
-  @Nullable private com.google.android.filament.Texture filamentTexture;
-  @Nullable private Stream filamentStream;
+  @androidx.annotation.Nullable
+  private com.google.android.filament.Texture filamentTexture;
+  @androidx.annotation.Nullable
+  private Stream filamentStream;
 
   /** Creates an ExternalTexture with a new Android {@link SurfaceTexture} and {@link Surface}. */
   @SuppressWarnings("initialization")
@@ -116,8 +124,10 @@ public class ExternalTexture {
 
   /** Cleanup filament objects after garbage collection */
   private static final class CleanupCallback implements Runnable {
-    @Nullable private final com.google.android.filament.Texture filamentTexture;
-    @Nullable private final Stream filamentStream;
+    @androidx.annotation.Nullable
+    private final com.google.android.filament.Texture filamentTexture;
+    @androidx.annotation.Nullable
+    private final Stream filamentStream;
 
     CleanupCallback(com.google.android.filament.Texture filamentTexture, Stream filamentStream) {
       this.filamentTexture = filamentTexture;

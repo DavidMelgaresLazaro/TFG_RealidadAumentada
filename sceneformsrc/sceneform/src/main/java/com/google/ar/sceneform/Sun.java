@@ -1,8 +1,10 @@
 package com.google.ar.sceneform;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+//change to androidx
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
@@ -44,7 +46,7 @@ public class Sun extends Node {
   }
 
   @Override
-  public void setParent(@Nullable NodeParent parent) {
+  public void setParent(@androidx.annotation.Nullable NodeParent parent) {
     throw new UnsupportedOperationException(
         "Sun's parent cannot be changed, it is always the scene.");
   }

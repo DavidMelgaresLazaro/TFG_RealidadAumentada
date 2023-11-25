@@ -1,8 +1,12 @@
 package com.google.ar.sceneform.rendering;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.annotation.Size;
+
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.annotation.Size;
+
+
 import android.util.Log;
 import com.google.android.filament.Engine;
 import com.google.android.filament.Entity;
@@ -64,7 +68,8 @@ public class RenderableInstance {
 
   private final TransformProvider transformProvider;
   private final Renderable renderable;
-  @Nullable private Renderer attachedRenderer;
+  @androidx.annotation.Nullable
+  private Renderer attachedRenderer;
   @Entity private int entity = 0;
   @Entity private int childEntity = 0;
   int renderableId = ChangeId.EMPTY_ID;
@@ -74,13 +79,16 @@ public class RenderableInstance {
 
 
   
-  @Nullable
+  @androidx.annotation.Nullable
   FilamentAsset filamentAsset;
 
-  @Nullable private SkinningModifier skinningModifier;
+  @androidx.annotation.Nullable
+  private SkinningModifier skinningModifier;
 
-  @Nullable private Matrix cachedRelativeTransform;
-  @Nullable private Matrix cachedRelativeTransformInverse;
+  @androidx.annotation.Nullable
+  private Matrix cachedRelativeTransform;
+  @androidx.annotation.Nullable
+  private Matrix cachedRelativeTransformInverse;
 
   @SuppressWarnings("initialization") // Suppress @UnderInitialization warning.
   public RenderableInstance(TransformProvider transformProvider, Renderable renderable) {
@@ -94,7 +102,7 @@ public class RenderableInstance {
     // the vertices (and bones, &c) at import time, we keep vertex data in the same unit as the
     // source asset and apply at runtime to a child entity via this relative transform.  If we get
     // back null, the relative transform is identity and the child entity path can be skipped.
-    @Nullable Matrix relativeTransform = getRelativeTransform();
+    @androidx.annotation.Nullable Matrix relativeTransform = getRelativeTransform();
     if (relativeTransform != null) {
       childEntity =
           createFilamentChildEntity(EngineInstance.getEngine(), entity, relativeTransform);
@@ -205,7 +213,7 @@ public class RenderableInstance {
 
 
 
-  @Nullable
+  @androidx.annotation.Nullable
   
   public FilamentAsset getFilamentAsset() {
     return filamentAsset;
@@ -240,7 +248,7 @@ public class RenderableInstance {
     return renderable.getFinalModelMatrix(transformProvider.getWorldModelMatrix());
   }
 
-  public void setSkinningModifier(@Nullable SkinningModifier skinningModifier) {
+  public void setSkinningModifier(@androidx.annotation.Nullable SkinningModifier skinningModifier) {
     this.skinningModifier = skinningModifier;
   }
 
@@ -334,7 +342,7 @@ public class RenderableInstance {
    *
    * @hide
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public Matrix getRelativeTransform() {
     if (cachedRelativeTransform != null) {
       return cachedRelativeTransform;
@@ -359,7 +367,7 @@ public class RenderableInstance {
    *
    * @hide
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public Matrix getRelativeTransformInverse() {
     if (cachedRelativeTransformInverse != null) {
       return cachedRelativeTransformInverse;

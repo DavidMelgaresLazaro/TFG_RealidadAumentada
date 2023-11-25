@@ -1,10 +1,14 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.android.filament.Material;
 
 public class MaterialInternalDataGltfImpl extends MaterialInternalData {
-  @Nullable private final com.google.android.filament.Material filamentMaterial;
+  @androidx.annotation.Nullable
+  private final com.google.android.filament.Material filamentMaterial;
 
   MaterialInternalDataGltfImpl(com.google.android.filament.Material filamentMaterial) {
     this.filamentMaterial = filamentMaterial;

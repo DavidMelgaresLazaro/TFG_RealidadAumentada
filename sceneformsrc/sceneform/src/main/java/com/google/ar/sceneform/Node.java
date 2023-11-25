@@ -1,6 +1,9 @@
 package com.google.ar.sceneform;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
@@ -152,9 +155,11 @@ public class Node extends NodeParent implements TransformProvider {
   private static final int LOCAL_DIRTY_FLAGS = LOCAL_TRANSFORM_DIRTY | WORLD_DIRTY_FLAGS;
 
   // Scene Graph fields.
-  @Nullable private Scene scene;
+  @androidx.annotation.Nullable
+  private Scene scene;
   // Stores the parent as a node (if the parent is a node) to avoid casting.
-  @Nullable private Node parentAsNode;
+  @androidx.annotation.Nullable
+  private Node parentAsNode;
 
   // the name of the node to identify it in the hierarchy
   @SuppressWarnings("unused")
@@ -177,7 +182,8 @@ public class Node extends NodeParent implements TransformProvider {
    * </ul>
    */
   // The node's parent could be a Node or the scene.
-  @Nullable NodeParent parent;
+  @androidx.annotation.Nullable
+  NodeParent parent;
 
   // Local transformation fields.
   private final Vector3 localPosition = new Vector3();
@@ -201,24 +207,31 @@ public class Node extends NodeParent implements TransformProvider {
 
   // Rendering fields.
   private int renderableId = ChangeId.EMPTY_ID;
-  @Nullable private RenderableInstance renderableInstance;
+  @androidx.annotation.Nullable
+  private RenderableInstance renderableInstance;
   // TODO: Right now, lightInstance can cause leaks because it subscribes to event
   // listeners on Light that will not be disposed unless setLight(null) is called.
-  @Nullable private LightInstance lightInstance;
+  @androidx.annotation.Nullable
+  private LightInstance lightInstance;
 
   // Collision fields.
-  @Nullable private CollisionShape collisionShape;
-  @Nullable private Collider collider;
+  @androidx.annotation.Nullable
+  private CollisionShape collisionShape;
+  @androidx.annotation.Nullable
+  private Collider collider;
 
   // Listeners.
-  @Nullable private OnTouchListener onTouchListener;
-  @Nullable private OnTapListener onTapListener;
+  @androidx.annotation.Nullable
+  private OnTouchListener onTouchListener;
+  @androidx.annotation.Nullable
+  private OnTapListener onTapListener;
   private final ArrayList<LifecycleListener> lifecycleListeners = new ArrayList<>();
   private final ArrayList<TransformChangedListener> transformChangedListeners = new ArrayList<>();
   private boolean allowDispatchTransformChangedListeners = true;
 
   // Stores data used for detecting when a tap has occurred on this node.
-  @Nullable private TapTrackingData tapTrackingData = null;
+  @androidx.annotation.Nullable
+  private TapTrackingData tapTrackingData = null;
 
   /** Creates a node with no parent. */
   @SuppressWarnings("initialization") // Suppress @UnderInitialization warning.
@@ -262,7 +275,7 @@ public class Node extends NodeParent implements TransformProvider {
    * @param parent The new parent that this node will be a child of. If null, this node will be
    *     detached from its parent.
    */
-  public void setParent(@Nullable NodeParent parent) {
+  public void setParent(@androidx.annotation.Nullable NodeParent parent) {
     AndroidPreconditions.checkUiThread();
 
     if (parent == this.parent) {
@@ -288,7 +301,7 @@ public class Node extends NodeParent implements TransformProvider {
    * Returns the scene that this node is part of, null if it isn't part of any scene. A node is part
    * of a scene if its highest level ancestor is a {@link Scene}
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public final Scene getScene() {
     return scene;
   }
@@ -301,7 +314,7 @@ public class Node extends NodeParent implements TransformProvider {
    *
    * @return the parent as a {@link Node}, if the parent is a {@link Node}.
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public final Node getParent() {
     return parentAsNode;
   }
@@ -430,7 +443,7 @@ public class Node extends NodeParent implements TransformProvider {
    *
    * @see OnTouchListener
    */
-  public void setOnTouchListener(@Nullable OnTouchListener onTouchListener) {
+  public void setOnTouchListener(@androidx.annotation.Nullable OnTouchListener onTouchListener) {
     this.onTouchListener = onTouchListener;
   }
 
@@ -441,7 +454,7 @@ public class Node extends NodeParent implements TransformProvider {
    *
    * @see OnTapListener
    */
-  public void setOnTapListener(@Nullable OnTapListener onTapListener) {
+  public void setOnTapListener(@androidx.annotation.Nullable OnTapListener onTapListener) {
     if (onTapListener != this.onTapListener) {
       tapTrackingData = null;
     }
@@ -843,7 +856,7 @@ public class Node extends NodeParent implements TransformProvider {
    * @see com.google.ar.sceneform.rendering.ViewRenderable
    * @param renderable Usually a 3D model. If null, this node's current renderable will be removed.
    */
-  public void setRenderable(@Nullable Renderable renderable) {
+  public void setRenderable(@androidx.annotation.Nullable Renderable renderable) {
     AndroidPreconditions.checkUiThread();
 
     // Renderable hasn't changed, return early.
@@ -877,7 +890,7 @@ public class Node extends NodeParent implements TransformProvider {
    *
    * @return renderable to display for this node
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public Renderable getRenderable() {
     if (renderableInstance == null) {
       return null;
@@ -898,7 +911,7 @@ public class Node extends NodeParent implements TransformProvider {
    * @param collisionShape represents a geometric shape, i.e. sphere, box, convex hull. If null,
    *     this node's current collision shape will be removed.
    */
-  public void setCollisionShape(@Nullable CollisionShape collisionShape) {
+  public void setCollisionShape(@androidx.annotation.Nullable CollisionShape collisionShape) {
     AndroidPreconditions.checkUiThread();
 
     this.collisionShape = collisionShape;
@@ -916,7 +929,7 @@ public class Node extends NodeParent implements TransformProvider {
    * @see Scene#overlapTestAll(Node)
    * @return represents a geometric shape, i.e. sphere, box, convex hull.
    */
-  @Nullable
+  @androidx.annotation.Nullable
   public CollisionShape getCollisionShape() {
     if (collider != null) {
       return collider.getShape();
@@ -932,7 +945,7 @@ public class Node extends NodeParent implements TransformProvider {
    *
    * @param light Properties of the {@link Light} to render, pass null to remove the light.
    */
-  public void setLight(@Nullable Light light) {
+  public void setLight(@androidx.annotation.Nullable Light light) {
     // If this is the same light already set there is nothing to do.
     if (getLight() == light) {
       return;
@@ -947,7 +960,7 @@ public class Node extends NodeParent implements TransformProvider {
   }
 
   /** Gets the current light, which is mutable. */
-  @Nullable
+  @androidx.annotation.Nullable
   public Light getLight() {
     if (lightInstance != null) {
       return lightInstance.getLight();
@@ -1171,7 +1184,7 @@ public class Node extends NodeParent implements TransformProvider {
    */
   @SuppressWarnings("AndroidApiChecker")
   @Override
-  @Nullable
+  @androidx.annotation.Nullable
   public Node findInHierarchy(Predicate<Node> condition) {
     if (condition.test(this)) {
       return this;
@@ -1186,12 +1199,12 @@ public class Node extends NodeParent implements TransformProvider {
   }
 
   /** Returns the parent of this node. */
-  @Nullable
+  @androidx.annotation.Nullable
   final NodeParent getNodeParent() {
     return parent;
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   final Collider getCollider() {
     return collider;
   }
@@ -1273,7 +1286,7 @@ public class Node extends NodeParent implements TransformProvider {
    *
    * @param scene The scene to set. If null, the scene is set to null.
    */
-  final void setSceneRecursively(@Nullable Scene scene) {
+  final void setSceneRecursively(@androidx.annotation.Nullable Scene scene) {
     AndroidPreconditions.checkUiThread();
 
     // First, set the scene of this node and all child nodes.
@@ -1299,7 +1312,7 @@ public class Node extends NodeParent implements TransformProvider {
 
 
   // TODO: Gltf animation api should be consistent with Sceneform.
-  @Nullable
+  @androidx.annotation.Nullable
   public RenderableInstance getRenderableInstance() {
     return renderableInstance;
   }
@@ -1324,7 +1337,7 @@ public class Node extends NodeParent implements TransformProvider {
     return cachedWorldModelMatrixInverse;
   }
 
-  private void setSceneRecursivelyInternal(@Nullable Scene scene) {
+  private void setSceneRecursivelyInternal(@androidx.annotation.Nullable Scene scene) {
     this.scene = scene;
     for (Node node : getChildren()) {
       node.setSceneRecursively(scene);

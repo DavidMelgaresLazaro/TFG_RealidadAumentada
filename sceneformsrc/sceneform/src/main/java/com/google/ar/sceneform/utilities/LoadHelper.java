@@ -8,7 +8,11 @@ import android.net.Uri;
 import android.net.http.HttpResponseCache;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.Nullable;
+
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -55,7 +59,7 @@ public class LoadHelper {
   /** True if the Uri is a filename, false if it is a remote location. */
   public static Boolean isFileAsset(Uri sourceUri) {
     Preconditions.checkNotNull(sourceUri, "Parameter \"sourceUri\" was null.");
-    @Nullable String scheme = sourceUri.getScheme();
+    @androidx.annotation.Nullable String scheme = sourceUri.getScheme();
     return TextUtils.isEmpty(scheme) || Objects.equals(ContentResolver.SCHEME_FILE, scheme);
   }
 
@@ -63,7 +67,7 @@ public class LoadHelper {
    * Normalizes Uri's based on a reference Uri. This function is for convenience only since the Uri
    * class can do this as well.
    */
-  public static Uri resolveUri(Uri unresolvedUri, @Nullable Uri parentUri) {
+  public static Uri resolveUri(Uri unresolvedUri, @androidx.annotation.Nullable Uri parentUri) {
 
     if (parentUri == null) {
       return unresolvedUri;
@@ -109,7 +113,7 @@ public class LoadHelper {
    * @throws IllegalArgumentException for Uri's that can't be loaded.
    */
   public static Callable<InputStream> fromUri(
-      Context context, Uri sourceUri, @Nullable Map<String, String> requestProperty) {
+      Context context, Uri sourceUri, @androidx.annotation.Nullable Map<String, String> requestProperty) {
     Preconditions.checkNotNull(sourceUri, "Parameter \"sourceUri\" was null.");
     Preconditions.checkNotNull(context, "Parameter \"context\" was null.");
     if (isFileAsset(sourceUri)) {
@@ -257,7 +261,7 @@ public class LoadHelper {
    * @throws IllegalArgumentException for URL's that can't be loaded.
    */
   private static Callable<InputStream> remoteUriToInputStreamCreator(
-      Uri sourceUri, @Nullable Map<String, String> requestProperty) {
+      Uri sourceUri, @androidx.annotation.Nullable Map<String, String> requestProperty) {
     try {
       URL sourceURL = new URL(sourceUri.toString());
       URLConnection conn = sourceURL.openConnection();
@@ -325,7 +329,7 @@ public class LoadHelper {
     }
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   private static String getGltfExtensionFromSchemeSpecificPart(String schemeSpecificPart) {
     if (schemeSpecificPart.startsWith("model/gltf-binary")) {
       return "glb";

@@ -1,6 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+//change to androidx
+import androidx.annotation.Nullable;
+
+
 import com.google.android.filament.MaterialInstance;
 import com.google.android.filament.TextureSampler;
 
@@ -38,7 +41,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Boolean2Parameter(name, x, y));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   boolean[] getBoolean2(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Boolean2Parameter) {
@@ -54,7 +57,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Boolean3Parameter(name, x, y, z));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   boolean[] getBoolean3(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Boolean3Parameter) {
@@ -70,7 +73,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Boolean4Parameter(name, x, y, z, w));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   boolean[] getBoolean4(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Boolean4Parameter) {
@@ -101,7 +104,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Float2Parameter(name, x, y));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   float[] getFloat2(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Float2Parameter) {
@@ -122,7 +125,7 @@ final class MaterialParameters {
         name, new MaterialParameters.Float3Parameter(name, value.x, value.y, value.z));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   float[] getFloat3(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Float3Parameter) {
@@ -138,7 +141,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Float4Parameter(name, x, y, z, w));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   float[] getFloat4(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Float4Parameter) {
@@ -169,7 +172,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Int2Parameter(name, x, y));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   int[] getInt2(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Int2Parameter) {
@@ -185,7 +188,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Int3Parameter(name, x, y, z));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   int[] getInt3(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Int3Parameter) {
@@ -201,7 +204,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.Int4Parameter(name, x, y, z, w));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   int[] getInt4(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof Int4Parameter) {
@@ -217,7 +220,7 @@ final class MaterialParameters {
     namedParameters.put(name, new MaterialParameters.TextureParameter(name, texture));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   Texture getTexture(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof TextureParameter) {
@@ -232,7 +235,7 @@ final class MaterialParameters {
         name, new MaterialParameters.ExternalTextureParameter(name, externalTexture));
   }
 
-  @Nullable
+  @androidx.annotation.Nullable
   ExternalTexture getExternalTexture(String name) {
     Parameter param = namedParameters.get(name);
     if (param instanceof ExternalTextureParameter) {

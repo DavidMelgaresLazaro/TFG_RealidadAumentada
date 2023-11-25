@@ -2,9 +2,13 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.annotation.VisibleForTesting;
+
+//change to androidx
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
+
+
 import android.view.Surface;
 import android.view.SurfaceView;
 import com.google.android.filament.Camera;
@@ -49,7 +53,8 @@ public class Renderer implements UiHelper.RendererCallback {
   // Limit resolution to 1080p for the minor edge. This is enough for Filament.
   private static final int MAXIMUM_RESOLUTION = 1080;
 
-  @Nullable private CameraProvider cameraProvider;
+  @androidx.annotation.Nullable
+  private CameraProvider cameraProvider;
   private final SurfaceView surfaceView;
   private final ViewAttachmentManager viewAttachmentManager;
 
@@ -57,7 +62,8 @@ public class Renderer implements UiHelper.RendererCallback {
   private final ArrayList<LightInstance> lightInstances = new ArrayList<>();
 
   private Surface surface;
-  @Nullable private SwapChain swapChain;
+  @androidx.annotation.Nullable
+  private SwapChain swapChain;
   private com.google.android.filament.View view;
   private com.google.android.filament.View emptyView;
   private com.google.android.filament.Renderer renderer;
@@ -78,8 +84,10 @@ public class Renderer implements UiHelper.RendererCallback {
       EnvironmentalHdrParameters.makeDefault();
 
   private static class Mirror {
-    @Nullable SwapChain swapChain;
-    @Nullable Surface surface;
+    @androidx.annotation.Nullable
+    SwapChain swapChain;
+    @androidx.annotation.Nullable
+    Surface surface;
     Viewport viewport;
   }
 
@@ -93,8 +101,10 @@ public class Renderer implements UiHelper.RendererCallback {
         com.google.android.filament.Camera camera);
   }
 
-  @Nullable private Runnable onFrameRenderDebugCallback = null;
-  @Nullable private PreRenderCallback preRenderCallback;
+  @androidx.annotation.Nullable
+  private Runnable onFrameRenderDebugCallback = null;
+  @androidx.annotation.Nullable
+  private PreRenderCallback preRenderCallback;
 
   /** @hide */
   @SuppressWarnings("initialization") // Suppress @UnderInitialization warning.
@@ -183,7 +193,7 @@ public class Renderer implements UiHelper.RendererCallback {
   }
 
   /** @hide */
-  public void setCameraProvider(@Nullable CameraProvider cameraProvider) {
+  public void setCameraProvider(@androidx.annotation.Nullable CameraProvider cameraProvider) {
     this.cameraProvider = cameraProvider;
   }
 
@@ -221,7 +231,7 @@ public class Renderer implements UiHelper.RendererCallback {
   }
 
   /** @hide */
-  public void setPreRenderCallback(@Nullable PreRenderCallback preRenderCallback) {
+  public void setPreRenderCallback(@androidx.annotation.Nullable PreRenderCallback preRenderCallback) {
     this.preRenderCallback = preRenderCallback;
   }
 
@@ -270,7 +280,7 @@ public class Renderer implements UiHelper.RendererCallback {
             cameraProjectionMatrix,
             cameraProvider.getNearClipPlane(),
             cameraProvider.getFarClipPlane());
-        @Nullable SwapChain swapChainLocal = swapChain;
+        @androidx.annotation.Nullable SwapChain swapChainLocal = swapChain;
         if (swapChainLocal == null) {
           throw new AssertionError("Internal Error: Failed to get swap chain");
         }
@@ -391,7 +401,7 @@ public class Renderer implements UiHelper.RendererCallback {
   /** @hide UiHelper.RendererCallback implementation */
   @Override
   public void onDetachedFromSurface() {
-    @Nullable SwapChain swapChainLocal = swapChain;
+    @androidx.annotation.Nullable SwapChain swapChainLocal = swapChain;
     if (swapChainLocal != null) {
       final IEngine engine = EngineInstance.getEngine();
       engine.destroySwapChain(swapChainLocal);
