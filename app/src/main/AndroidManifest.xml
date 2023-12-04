@@ -11,6 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RealidadAumentada"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -22,4 +27,22 @@
         </activity>
     </application>
 
+
+
+    <!-- Esta línea es para darle a la aplicación, permisos de cámara, ya que será
+    necesario para visualizar el entorno donde queremos usar la RA -->
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+
+    <!-- Esto ayuda a comprobar una característica específica en el hardware del
+    teléfono, aquí es la versión de OpenGlES. Sceneform necesita OpenGLES versión
+    3.0 o posterior -->
+    <!--<uses-feature android:glesversion="0x00030000" android:required="true"/> -->
+
+    <!-- Indica que esta aplicación requiere Google Play Services para AR. Limita la
+    visibilidad de la aplicación en Google Play Store a los dispositivos compatibles
+    con ARCore. Si lo marcamos como opcional, la aplicación será visible para todos,
+    pero no podrán usar esta característica en caso de no ser compatible -->
+    <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 </manifest>
