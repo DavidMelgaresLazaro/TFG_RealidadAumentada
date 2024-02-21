@@ -2,12 +2,22 @@ package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada
 
 
 
+import android.Manifest
 import android.app.ActivityManager
-import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
@@ -15,9 +25,9 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 
-
 const val MIN_OPENGL_VERSION = 3.0
 const val MAX_TAP_NUMBER = 1
+const val REQUEST_CODE_PERMISSIONS = 101
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,8 +39,100 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         if (checkSystemSupport()) {
             setOnTapInPlane()
+            setupTakePhotoButton()
         }
     }
+
+    private fun checkSystemSupport(): Boolean {
+        val openGlVersion: String = (getSystemService(Context.ACTIVITY_SERVICE)
+                as ActivityManager).deviceConfigurationInfo.glEsVersion
+        return if (openGlVersion.toDouble() >= MIN_OPENGL_VERSION) {
+            if (!arePermissionsGranted()) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    REQUEST_CODE_PERMISSIONS
+                )
+            }
+            true
+        } else {
+            Toast.makeText(
+                this,
+                getString(R.string.open_gl_version_not_supported),
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
+            false
+        }
+    }
+
+    private fun arePermissionsGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun setupTakePhotoButton() {
+        val takePhotoButton = findViewById<Button>(R.id.btnTakePhoto)
+        takePhotoButton.setOnClickListener {
+            takePhoto()
+        }
+    }
+
+
+
+    private fun takePhoto() {
+        // Capturar la vista de la ventana principal de la actividad
+        val view = window.decorView.rootView
+
+        // Habilitar la generación de caché para la vista
+        view.isDrawingCacheEnabled = true
+
+        // Crear un bitmap de la caché de dibujo
+        val bitmap = Bitmap.createBitmap(view.drawingCache)
+
+        // Deshabilitar la generación de caché una vez que se captura el bitmap
+        view.isDrawingCacheEnabled = false
+
+        // Guardar la foto en la galería
+        savePhotoToGallery(bitmap)
+    }
+
+
+    private fun savePhotoToGallery(bitmap: Bitmap) {
+        val filename = "${System.currentTimeMillis()}.png"
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+        }
+
+        val resolver = contentResolver
+        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+        uri?.let {
+            try {
+                resolver.openOutputStream(uri)?.use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    Toast.makeText(
+                        this,
+                        "Photo saved to Gallery",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(
+                    this,
+                    "Failed to save photo",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+
+
 
     private fun setOnTapInPlane() {
         arFragment = supportFragmentManager.findFragmentById(
@@ -56,30 +158,13 @@ class MainActivity : AppCompatActivity() {
                     modelRenderable
                 )
             }.exceptionally { throwable: Throwable ->
-              val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-               builder.setMessage(
-                  getString(R.string.something_is_not_right)
-                           + throwable.message
-               ).show()
-              null
-           }
-    }
-
-    private fun checkSystemSupport(): Boolean {
-        val openGlVersion: String = (getSystemService(Context.ACTIVITY_SERVICE)
-                as ActivityManager).deviceConfigurationInfo.glEsVersion
-        return if (openGlVersion.toDouble() >= MIN_OPENGL_VERSION) {
-            true
-
-        } else {
-            Toast.makeText(
-                this,
-                getString(R.string.open_gl_version_not_supported),
-                Toast.LENGTH_SHORT
-            ).show()
-            finish()
-            false
-        }
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage(
+                    getString(R.string.something_is_not_right)
+                            + throwable.message
+                ).show()
+                null
+            }
     }
 
     private fun addModel(anchor: Anchor, modelRenderable: ModelRenderable?) {

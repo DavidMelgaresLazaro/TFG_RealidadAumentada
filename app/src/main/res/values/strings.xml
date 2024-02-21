@@ -2,6 +2,8 @@
     <string name="app_name">RealidadAumentada</string>
     <string name="something_is_not_right">Error</string>
     <string name="open_gl_version_not_supported">Try other gl version</string>
+    <string name="capture_photo">Capture Photo</string>
+    <string name="take_photo" />
 
 
 </resources>
