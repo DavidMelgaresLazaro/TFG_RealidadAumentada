@@ -10,7 +10,10 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.MediaStore
+import android.view.PixelCopy
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -83,21 +86,29 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun takePhoto() {
-        // Capturar la vista de la ventana principal de la actividad
-        val view = window.decorView.rootView
+        // Obtener la vista del ArFragment
+        val arView = arFragment?.arSceneView
 
-        // Habilitar la generación de caché para la vista
-        view.isDrawingCacheEnabled = true
-
-        // Crear un bitmap de la caché de dibujo
-        val bitmap = Bitmap.createBitmap(view.drawingCache)
-
-        // Deshabilitar la generación de caché una vez que se captura el bitmap
-        view.isDrawingCacheEnabled = false
-
-        // Guardar la foto en la galería
-        savePhotoToGallery(bitmap)
+        // Verificar que la vista de AR esté disponible
+        if (arView != null) {
+            // Crear un bitmap de la vista de AR
+            val bitmap = Bitmap.createBitmap(arView.width, arView.height, Bitmap.Config.ARGB_8888)
+            val handlerThread = HandlerThread("PixelCopier")
+            handlerThread.start()
+            PixelCopy.request(arView, bitmap, { copyResult ->
+                if (copyResult == PixelCopy.SUCCESS) {
+                    // Guardar la foto en la galería
+                    savePhotoToGallery(bitmap)
+                } else {
+                    //Toast.makeText(this, "Failed to take photo", Toast.LENGTH_SHORT).show()
+                }
+                handlerThread.quitSafely()
+            }, Handler(handlerThread.looper))
+        } else {
+            //Toast.makeText(this, "AR view is not available", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
 
     private fun savePhotoToGallery(bitmap: Bitmap) {
