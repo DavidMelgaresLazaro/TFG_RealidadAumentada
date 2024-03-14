@@ -4,6 +4,10 @@
     <string name="open_gl_version_not_supported">Try other gl version</string>
     <string name="capture_photo">Capture Photo</string>
     <string name="take_photo" />
+    <string name="take_photos">Take Photo</string>
+    <string name="take_a_photos">Take a photo</string>
+    <string name="tomar_foto">Tomar Foto</string>
+    <string name="bot_n_para_tomar_una_foto">Botón para tomar una foto</string>
 
 
 </resources>

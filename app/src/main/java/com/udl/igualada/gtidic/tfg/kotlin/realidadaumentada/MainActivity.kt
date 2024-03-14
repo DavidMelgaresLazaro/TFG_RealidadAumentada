@@ -40,10 +40,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val takePhotoButton = findViewById<Button>(R.id.btnTakePhoto)
+
         if (checkSystemSupport()) {
             setOnTapInPlane()
             setupTakePhotoButton()
         }
+
+        takePhotoButton.setOnClickListener {
+            takePhoto()
+        }
+
     }
 
     private fun checkSystemSupport(): Boolean {
@@ -86,26 +94,27 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun takePhoto() {
-        // Obtener la vista del ArFragment
+
         val arView = arFragment?.arSceneView
 
-        // Verificar que la vista de AR esté disponible
+        val context = applicationContext
+
         if (arView != null) {
-            // Crear un bitmap de la vista de AR
+
             val bitmap = Bitmap.createBitmap(arView.width, arView.height, Bitmap.Config.ARGB_8888)
             val handlerThread = HandlerThread("PixelCopier")
             handlerThread.start()
             PixelCopy.request(arView, bitmap, { copyResult ->
                 if (copyResult == PixelCopy.SUCCESS) {
-                    // Guardar la foto en la galería
+
                     savePhotoToGallery(bitmap)
                 } else {
-                    //Toast.makeText(this, "Failed to take photo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Failed to take photo", Toast.LENGTH_SHORT).show()
                 }
                 handlerThread.quitSafely()
             }, Handler(handlerThread.looper))
         } else {
-            //Toast.makeText(this, "AR view is not available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "AR view is not available", Toast.LENGTH_SHORT).show()
         }
     }
 
