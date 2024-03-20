@@ -8,6 +8,7 @@
     <string name="take_a_photos">Take a photo</string>
     <string name="tomar_foto">Tomar Foto</string>
     <string name="bot_n_para_tomar_una_foto">Botón para tomar una foto</string>
+    <string name="photo_saved_to_gallery">Se ha guardado la foto</string>
 
 
 </resources>
