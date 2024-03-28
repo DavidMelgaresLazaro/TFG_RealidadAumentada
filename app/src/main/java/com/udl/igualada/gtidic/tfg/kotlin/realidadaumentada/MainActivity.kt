@@ -1,7 +1,7 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada
 
 
-
+/*
 import android.Manifest
 import android.app.ActivityManager
 import android.content.ContentValues
@@ -198,3 +198,4 @@ class MainActivity : AppCompatActivity() {
         transformableNode.select()
     }
 }
+*/
