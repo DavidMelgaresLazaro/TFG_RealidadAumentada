@@ -1,7 +1,7 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada
 
 
-
+/*
 import android.Manifest
 import android.app.ActivityManager
 import android.content.ContentValues
@@ -10,7 +10,10 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.MediaStore
+import android.view.PixelCopy
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,10 +40,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val takePhotoButton = findViewById<Button>(R.id.btnTakePhoto)
+
         if (checkSystemSupport()) {
             setOnTapInPlane()
             setupTakePhotoButton()
         }
+
+        takePhotoButton.setOnClickListener {
+            takePhoto()
+        }
+
     }
 
     private fun checkSystemSupport(): Boolean {
@@ -83,21 +94,30 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun takePhoto() {
-        // Capturar la vista de la ventana principal de la actividad
-        val view = window.decorView.rootView
 
-        // Habilitar la generación de caché para la vista
-        view.isDrawingCacheEnabled = true
+        val arView = arFragment?.arSceneView
 
-        // Crear un bitmap de la caché de dibujo
-        val bitmap = Bitmap.createBitmap(view.drawingCache)
+        val context = applicationContext
 
-        // Deshabilitar la generación de caché una vez que se captura el bitmap
-        view.isDrawingCacheEnabled = false
+        if (arView != null) {
 
-        // Guardar la foto en la galería
-        savePhotoToGallery(bitmap)
+            val bitmap = Bitmap.createBitmap(arView.width, arView.height, Bitmap.Config.ARGB_8888)
+            val handlerThread = HandlerThread("PixelCopier")
+            handlerThread.start()
+            PixelCopy.request(arView, bitmap, { copyResult ->
+                if (copyResult == PixelCopy.SUCCESS) {
+
+                    savePhotoToGallery(bitmap)
+                } else {
+                    Toast.makeText(context, "Failed to take photo", Toast.LENGTH_SHORT).show()
+                }
+                handlerThread.quitSafely()
+            }, Handler(handlerThread.looper))
+        } else {
+            Toast.makeText(context, "AR view is not available", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
 
     private fun savePhotoToGallery(bitmap: Bitmap) {
@@ -178,3 +198,4 @@ class MainActivity : AppCompatActivity() {
         transformableNode.select()
     }
 }
+*/
