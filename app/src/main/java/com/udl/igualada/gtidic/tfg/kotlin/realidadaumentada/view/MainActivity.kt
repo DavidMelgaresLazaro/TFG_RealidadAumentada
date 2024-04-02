@@ -1,6 +1,6 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
-// MainActivity.kt
+
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.viewModels

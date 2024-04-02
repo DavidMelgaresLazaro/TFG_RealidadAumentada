@@ -1,7 +1,7 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel
 
 
-// ArViewModel.kt
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
