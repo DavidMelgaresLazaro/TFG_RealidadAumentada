@@ -28,7 +28,9 @@ import android.net.Uri
 import android.util.Log
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.ArViewModel
+import java.io.Console
 import java.io.File
+import java.io.FileOutputStream
 import java.io.OutputStream
 
 class MainActivity : AppCompatActivity() {
@@ -36,8 +38,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var arViewModel: ArViewModel
     private lateinit var arFragment: ArFragment
 
-    private val WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 1001
     private val PICK_MODEL_REQUEST_CODE = 1
+
+    // Constants for better maintainability
+    private  val WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 1
+    private  val PERMISSION_GRANTED_MESSAGE = "Permiso de escritura concedido"
+    private  val PERMISSION_DENIED_MESSAGE = "Permiso de escritura denegado"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,41 +61,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun checkSystemSupport(): Boolean {
         val openGlVersion: String = (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).deviceConfigurationInfo.glEsVersion
-        return if (openGlVersion.toDouble() >= ArViewModel.MIN_OPENGL_VERSION) {
-            if (!arePermissionsGranted()) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    WRITE_EXTERNAL_STORAGE_REQUEST_CODE
-                )
-            }
-            true
-        } else {
+        if (openGlVersion.toDouble() < ArViewModel.MIN_OPENGL_VERSION) {
             Toast.makeText(this, getString(R.string.open_gl_version_not_supported), Toast.LENGTH_SHORT).show()
             finish()
-            false
+            return false
         }
+        if (!arePermissionsGranted()) {
+            requestPermissions()
+        }
+        return true
     }
 
     private fun arePermissionsGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
             this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE),
+            WRITE_EXTERNAL_STORAGE_REQUEST_CODE
+        )
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permiso de escritura concedido", Toast.LENGTH_SHORT).show()
+            val message = if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                PERMISSION_GRANTED_MESSAGE
             } else {
-                Toast.makeText(this, "Permiso de escritura denegado", Toast.LENGTH_SHORT).show()
+                PERMISSION_DENIED_MESSAGE
             }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private fun setupTakePhotoButton() {
         val takePhotoButton = findViewById<Button>(R.id.btnTakePhoto)
@@ -105,7 +119,8 @@ class MainActivity : AppCompatActivity() {
     private fun openFileSelector() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type = "model/*" // Filtrar solo modelos 3D
+        intent.type = "*/*" // Filtrar todos los tipos de archivos
+        //intent.type = "model/*" // Filtrar solo modelos 3D
         startActivityForResult(intent, PICK_MODEL_REQUEST_CODE)
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -119,22 +134,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadModelFromUri(uri: Uri) {
-        val file = File(uri.path) // Obtener el archivo desde la URI
-        if (file.exists()) {
-            ModelRenderable.builder()
-                .setSource(this, Uri.parse(file.toURI().toString())) // Convertir la URI del archivo en una URI válida
-                .build()
-                .thenAccept { modelRenderable ->
-                    arViewModel.addModelToScene(modelRenderable, arFragment)
-                }
-                .exceptionally { throwable ->
-                    Toast.makeText(this, "Error loading model: ${throwable.message}", Toast.LENGTH_SHORT).show()
-                    null
-                }
-        } else {
-            Toast.makeText(this, "File not found at: ${uri.path}", Toast.LENGTH_SHORT).show()
+        // Use ContentResolver to get an InputStream from the Uri
+        contentResolver.openInputStream(uri)?.use { inputStream ->
+            // Create a temporary file
+            val tempFile = File.createTempFile("model", ".glb", cacheDir)
+            // Use FileOutputStream to write the InputStream to the temporary file
+            FileOutputStream(tempFile).use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            // Check if the file exists
+            if (tempFile.exists()) {
+                // Load the model from the temporary file
+                ModelRenderable.builder()
+                    .setSource(this, Uri.parse(tempFile.absolutePath))
+                    .build()
+                    .thenAccept { modelRenderable ->
+                        arViewModel.addModelToScene(modelRenderable, arFragment)
+                    }
+                    .exceptionally { throwable ->
+                        Toast.makeText(this, "Error loading model: ${throwable.message}", Toast.LENGTH_SHORT).show()
+                        Log.d("TAG","Error loading model: ${throwable.message}" )
+                        null
+                    }
+            } else {
+                Toast.makeText(this, "File not found at: ${uri.path}", Toast.LENGTH_SHORT).show()
+                Log.d("TAG","File not found at: ${uri.path}")
+            }
         }
     }
+
 
 
     private fun takePhoto() {
