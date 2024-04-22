@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var arViewModel: ArViewModel
     private lateinit var arFragment: ArFragment
 
+    private var lastHitResult: HitResult? = null
+
     private val PICK_MODEL_REQUEST_CODE = 1
 
     // Constants for better maintainability
@@ -128,40 +130,52 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == PICK_MODEL_REQUEST_CODE && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
-                loadModelFromUri(uri)
+                val hitResult = lastHitResult // Obtener el HitResult almacenado
+                if (hitResult != null) {
+                    loadModelFromUri(uri, applicationContext, hitResult, arFragment)
+                } else {
+                    Toast.makeText(applicationContext, "No se encontró el HitResult", Toast.LENGTH_SHORT).show()
+                    Log.e("MainActivity", "No se encontró el HitResult al cargar el modelo desde URI")
+                }
             }
         }
     }
 
-    private fun loadModelFromUri(uri: Uri) {
-        // Use ContentResolver to get an InputStream from the Uri
-        contentResolver.openInputStream(uri)?.use { inputStream ->
+
+    fun loadModelFromUri(uri: Uri, context: Context, hitResult: HitResult, arFragment: ArFragment) {
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
             // Create a temporary file
-            val tempFile = File.createTempFile("model", ".glb", cacheDir)
+            val tempFile = File.createTempFile("model", ".glb", context.cacheDir)
             // Use FileOutputStream to write the InputStream to the temporary file
             FileOutputStream(tempFile).use { outputStream ->
                 inputStream.copyTo(outputStream)
             }
             // Check if the file exists
             if (tempFile.exists()) {
+                // Create an Anchor from the HitResult
+                val anchor = hitResult.createAnchor()
                 // Load the model from the temporary file
                 ModelRenderable.builder()
-                    .setSource(this, Uri.parse(tempFile.absolutePath))
+                    .setSource(context, Uri.parse(tempFile.absolutePath))
                     .build()
                     .thenAccept { modelRenderable ->
-                        arViewModel.addModelToScene(modelRenderable, arFragment)
+                        // Add the model to the scene using the created Anchor
+                        arViewModel.addModel(anchor, modelRenderable, arFragment)
                     }
                     .exceptionally { throwable ->
-                        Toast.makeText(this, "Error loading model: ${throwable.message}", Toast.LENGTH_SHORT).show()
-                        Log.d("TAG","Error loading model: ${throwable.message}" )
+                        Toast.makeText(context, "Error loading model: ${throwable.message}", Toast.LENGTH_SHORT).show()
+                        Log.d("TAG", "Error loading model: ${throwable.message}")
                         null
                     }
             } else {
-                Toast.makeText(this, "File not found at: ${uri.path}", Toast.LENGTH_SHORT).show()
-                Log.d("TAG","File not found at: ${uri.path}")
+                Toast.makeText(context, "File not found at: ${uri.path}", Toast.LENGTH_SHORT).show()
+                Log.d("TAG", "File not found at: ${uri.path}")
             }
         }
     }
+
+
+
 
 
 
@@ -188,6 +202,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setOnTapInPlane() {
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
+            lastHitResult = hitResult // Almacenar el HitResult globalmente
             arViewModel.handleTap(hitResult, arFragment)
         }
     }

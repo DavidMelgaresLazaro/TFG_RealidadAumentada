@@ -4,7 +4,10 @@ import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Handler
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -60,7 +63,7 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    private fun addModel(anchor: Anchor, modelRenderable: ModelRenderable?, arFragment: ArFragment) {
+    fun addModel(anchor: Anchor, modelRenderable: ModelRenderable?, arFragment: ArFragment) {
         val anchorNode = AnchorNode(anchor)
         anchorNode.setParent(arFragment.arSceneView.scene)
 
@@ -79,30 +82,32 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         val resolver = context.contentResolver
-        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        var uri: Uri? = null
 
-        uri?.let {
-            try {
-                resolver.openOutputStream(uri)?.use { outputStream ->
+        try {
+            uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+            uri?.let { imageUri ->
+                resolver.openOutputStream(imageUri)?.use { outputStream ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                    arState.value = arState.value?.copy(isPhotoSaved = true)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(context, "Failed to save photo", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-    fun addModelToScene(modelRenderable: ModelRenderable, arFragment: ArFragment) {
-        arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
-            val anchor = hitResult.createAnchor()
-            val anchorNode = AnchorNode(anchor)
-            anchorNode.setParent(arFragment.arSceneView.scene)
 
-            val transformableNode = TransformableNode(arFragment.transformationSystem)
-            transformableNode.setParent(anchorNode)
-            transformableNode.renderable = modelRenderable
-            transformableNode.select()
+                    // Update arState value on the main thread
+                    Handler(context.mainLooper).post {
+                        arState.value = arState.value?.copy(isPhotoSaved = true)
+                    }
+
+                    Log.d("ArViewModel", "Photo saved successfully: $imageUri")
+                    Toast.makeText(context, "Photo saved successfully", Toast.LENGTH_SHORT).show()
+                }
+            } ?: Log.e("ArViewModel", "Failed to create image file")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "Failed to save photo", Toast.LENGTH_SHORT).show()
+            Log.e("ArViewModel", "Failed to save photo", e)
         }
     }
+
+
+
+
 }
