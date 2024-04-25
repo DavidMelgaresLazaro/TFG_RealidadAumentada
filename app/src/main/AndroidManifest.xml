@@ -45,10 +45,6 @@
     con ARCore. Si lo marcamos como opcional, la aplicación será visible para todos,
     pero no podrán usar esta característica en caso de no ser compatible -->
     <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
-
-
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

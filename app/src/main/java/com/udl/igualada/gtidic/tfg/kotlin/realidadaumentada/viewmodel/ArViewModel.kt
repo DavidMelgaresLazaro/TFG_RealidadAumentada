@@ -19,13 +19,16 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.ARModel
-
+import kotlinx.coroutines.*
+import java.io.File
 
 class ArViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val context: Context = application.applicationContext
     private var tapNumber = 0
     val arState = MutableLiveData<ARModel>()
+
+    private val context: Context
+        get() = getApplication<Application>().applicationContext
 
     init {
         arState.value = ARModel()
@@ -44,17 +47,19 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
     private fun createModelRenderable(hitResult: HitResult, arFragment: ArFragment) {
+        val scaleFactor = 0.01f
         val anchor: Anchor = hitResult.createAnchor()
         ModelRenderable.builder()
-            .setSource(context, R.raw.chess)
+            .setSource(arFragment.requireContext(), R.raw.chess)
             .setIsFilamentGltf(true)
             .build()
             .thenAccept { modelRenderable: ModelRenderable? ->
                 addModel(
                     anchor,
                     modelRenderable,
-                    arFragment
+                    arFragment,
                 )
             }.exceptionally { throwable: Throwable ->
                 Toast.makeText(context, context.getString(R.string.something_is_not_right) + throwable.message, Toast.LENGTH_LONG).show()
@@ -63,15 +68,14 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun addModel(anchor: Anchor, modelRenderable: ModelRenderable?, arFragment: ArFragment) {
+    fun addModel(anchor: Anchor, renderable: ModelRenderable?, arFragment: ArFragment) {
         val anchorNode = AnchorNode(anchor)
         anchorNode.setParent(arFragment.arSceneView.scene)
-
-        val transformableNode = TransformableNode(arFragment.transformationSystem)
-        transformableNode.setParent(anchorNode)
-
-        transformableNode.renderable = modelRenderable
-        transformableNode.select()
+        val modelNode = TransformableNode(arFragment.transformationSystem)
+        modelNode.renderable = renderable
+        modelNode.setParent(anchorNode)
+        modelNode.select()
+        arFragment.arSceneView.scene.addChild(modelNode)
     }
 
     fun savePhotoToGallery(bitmap: Bitmap) {
@@ -107,7 +111,38 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private val modelScope = MainScope()
 
+    fun changeModel(filePath: String, arFragment: ArFragment) {
+        val file = File(filePath)
+        if (!file.exists()) {
+            Log.e("ArViewModel", "Model file does not exist: $filePath")
+            return
+        }
 
+        modelScope.launch {
+            val model = ModelRenderable.builder()
+                .setSource(arFragment.requireContext(), Uri.fromFile(file))
+                .setIsFilamentGltf(true)
+                .build()
 
+            model.thenAccept { modelRenderable: ModelRenderable? ->
+                Log.d("ArViewModel", "ModelRenderable instance: $modelRenderable")
+                Log.d("ArViewModel", arFragment.arSceneView.scene.children.toString())
+                arFragment.arSceneView.scene.children.forEach { node ->
+                    if (node is TransformableNode) {
+                        node.renderable = modelRenderable
+                        //node.localScale = Vector3(100000000f,100000000f,100000000f)
+                        Log.d("ArViewModel", "TransformableNode updated with new renderable: ${node.renderable}")
+                    }
+                }
+            }.exceptionally { throwable: Throwable ->
+                Log.e("ArViewModel", "Error loading model", throwable)
+                Toast.makeText(context,
+                    context.getString(R.string.something_is_not_right)
+                            + throwable.message, Toast.LENGTH_LONG).show()
+                null
+            }
+        }
+    }
 }
