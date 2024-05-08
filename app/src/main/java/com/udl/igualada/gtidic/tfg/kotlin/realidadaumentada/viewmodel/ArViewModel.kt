@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -52,7 +53,7 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
         val scaleFactor = 0.01f
         val anchor: Anchor = hitResult.createAnchor()
         ModelRenderable.builder()
-            .setSource(arFragment.requireContext(), R.raw.chess)
+            .setSource(arFragment.requireContext(), R.raw.sas__cs2_agent_model_green)
             .setIsFilamentGltf(true)
             .build()
             .thenAccept { modelRenderable: ModelRenderable? ->
@@ -145,4 +146,67 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    fun moveModel(arFragment: ArFragment, translation: Vector3) {
+        arFragment.arSceneView.scene.children.forEach { node ->
+            if (node is TransformableNode) {
+                try {
+                    val parentNode = node.parent
+                    if (parentNode is AnchorNode) {
+                        // Move the model
+                        node.localPosition = Vector3.add(node.localPosition, translation)
+                    }
+                } catch (e: Exception) {
+                    // Handle any exception that may occur while moving the model
+                    Log.e("ArViewModel", "Error moving the model", e)
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+    fun increaseModelSize(arFragment: ArFragment) {
+        adjustModelSize(arFragment, true)
+    }
+
+    fun decreaseModelSize(arFragment: ArFragment) {
+        adjustModelSize(arFragment, false)
+    }
+
+    private fun adjustModelSize(arFragment: ArFragment, increaseSize: Boolean) {
+        val scaleFactor = if (increaseSize) 1.2f else 0.8f // Factor de escala para ajustar el tamaño del modelo
+        val minScale = 0.1f // Escala mínima permitida
+        val maxScale = 10.0f // Escala máxima permitida
+
+        arFragment.arSceneView.scene.children.forEach { node ->
+            if (node is TransformableNode) {
+                val newScale = Vector3(
+                    node.localScale.x * scaleFactor,
+                    node.localScale.y * scaleFactor,
+                    node.localScale.z * scaleFactor
+                ).clamp(minScale, maxScale)
+
+                // Aplicar interpolación suave
+                node.localScale = Vector3.lerp(node.localScale, newScale, 0.1f)
+
+                val adjustmentType = if (increaseSize) "increased" else "decreased"
+                Log.d("ArViewModel", "Model size $adjustmentType successfully") // Registro del ajuste de tamaño del modelo
+            }
+        }
+    }
+
+    // Extensión para limitar la escala dentro de un rango específico
+    private fun Vector3.clamp(min: Float, max: Float): Vector3 {
+        return Vector3(
+            x.coerceIn(min, max),
+            y.coerceIn(min, max),
+            z.coerceIn(min, max)
+        )
+    }
+
+
 }

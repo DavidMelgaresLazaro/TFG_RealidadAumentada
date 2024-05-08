@@ -20,6 +20,12 @@ import com.google.ar.sceneform.ux.ArFragment
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.View
+import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.ux.TransformableNode
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.ArViewModel
 import java.io.*
@@ -41,7 +47,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         arFragment = supportFragmentManager.findFragmentById(
-            R.id.activity_main__container__camera_area) as ArFragment
+            R.id.activity_main__container__camera_area
+        ) as ArFragment
 
         arViewModel = ViewModelProvider(
             this,
@@ -52,8 +59,26 @@ class MainActivity : AppCompatActivity() {
             setOnTapInPlane()
             setupTakePhotoButton()
             setupSelectModelButton()
+            setupIncreaseSizeButton()
+            setupDecreaseSizeButton()
+            setupGestureDetector()
         }
     }
+
+    private fun setupIncreaseSizeButton() {
+        val increaseSizeButton = findViewById<Button>(R.id.btnIncreaseSize)
+        increaseSizeButton.setOnClickListener {
+            arViewModel.increaseModelSize(arFragment)
+        }
+    }
+
+    private fun setupDecreaseSizeButton() {
+        val decreaseSizeButton = findViewById<Button>(R.id.btnDecreaseSize)
+        decreaseSizeButton.setOnClickListener {
+            arViewModel.decreaseModelSize(arFragment)
+        }
+    }
+
 
 
     private fun checkSystemSupport(): Boolean {
@@ -179,4 +204,35 @@ class MainActivity : AppCompatActivity() {
             arViewModel.handleTap(hitResult, arFragment)
         }
     }
+
+    private fun setupGestureDetector() {
+        val gestureDetector =
+            GestureDetector(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onScroll(
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    distanceX: Float,
+                    distanceY: Float
+                ): Boolean {
+                    // Calcula el desplazamiento en la escena AR
+                    val translation = Vector3(distanceX, 0f, distanceY)
+                    // Llama a la función moveModel con el desplazamiento calculado
+                    arViewModel.moveModel(arFragment, translation)
+                    return true
+                }
+            })
+
+        // Obtiene la vista raíz del fragmento AR
+        val rootView = arFragment.view
+
+        // Asigna el detector de gestos a la vista raíz del fragmento
+        rootView?.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            true // Devuelve true para indicar que se ha gestionado el evento
+        }
+    }
+
+
+
+
 }
