@@ -18,9 +18,13 @@ import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.ARModel
 import kotlinx.coroutines.*
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 class ArViewModel(application: Application) : AndroidViewModel(application) {
@@ -104,6 +108,8 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
 
                     Log.d("ArViewModel", "Photo saved successfully: $imageUri")
                     Toast.makeText(context, "Photo saved successfully", Toast.LENGTH_SHORT).show()
+
+                    uploadImageToFirebase(imageUri,bitmap)
                 }
             } ?: Log.e("ArViewModel", "Failed to create image file")
         } catch (e: Exception) {
@@ -208,6 +214,56 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
             z.coerceIn(min, max)
         )
     }
+
+    private fun uploadImageToFirebase(imageUri: Uri, bitmap: Bitmap) {
+        val storageRef = Firebase.storage.reference
+        val imagesRef = storageRef.child("images/${System.currentTimeMillis()}.png")
+
+        // Convertir el bitmap a un array de bytes
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val imageData = baos.toByteArray()
+
+        // Subir el bitmap como un array de bytes
+        val uploadTask = imagesRef.putBytes(imageData)
+        uploadTask.addOnSuccessListener { taskSnapshot ->
+            // La imagen se ha subido exitosamente
+            // Aquí puedes realizar cualquier acción adicional que necesites después de subir la imagen
+            // Por ejemplo, obtener la URL de descarga de la imagen y guardarla en la base de datos
+            imagesRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                val downloadUrl = downloadUri.toString()
+                // Ahora puedes guardar la URL de descarga en la base de datos, por ejemplo:
+                savePhotoInfoToDatabase(downloadUrl)
+            }.addOnFailureListener { exception ->
+                // Manejar el error al obtener la URL de descarga de la imagen
+                Log.e("TAG", "Failed to get download URL: ${exception.message}")
+            }
+        }.addOnFailureListener { exception ->
+            // Manejar el error al subir la imagen
+            Log.e("TAG", "Failed to upload image: ${exception.message}")
+        }
+    }
+
+    private fun savePhotoInfoToDatabase(downloadUrl: String) {
+        // Guardar la URL de la imagen en Firebase Realtime Database
+        val database = FirebaseDatabase.getInstance()
+        val photosRef = database.getReference("photos")
+
+        val photoData = hashMapOf(
+            "url" to downloadUrl,
+            // Puedes agregar más datos aquí si lo deseas, como la fecha de creación, el nombre del usuario, etc.
+        )
+
+        photosRef.push().setValue(photoData)
+            .addOnSuccessListener {
+                Log.d("ArViewModel", "Photo information saved to Realtime Database successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ArViewModel", "Error saving photo information to Realtime Database", e)
+                // Manejar el error
+            }
+    }
+
 
 
 }
