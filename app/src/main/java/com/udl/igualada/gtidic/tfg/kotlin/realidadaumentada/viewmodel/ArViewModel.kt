@@ -85,6 +85,7 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
         }
+        //
 
         val resolver = context.contentResolver
         var uri: Uri? = null
