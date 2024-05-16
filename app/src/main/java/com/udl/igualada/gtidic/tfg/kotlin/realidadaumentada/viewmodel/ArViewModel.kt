@@ -80,8 +80,16 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
         modelNode.renderable = renderable
         modelNode.setParent(anchorNode)
         modelNode.select()
-        arFragment.arSceneView.scene.addChild(modelNode)
+
+        // Obtener las coordenadas del modelo a partir de la matriz de transformación
+        val position = anchorNode.worldPosition
+        arState.value = arState.value?.copy(
+            modelX = position.x,
+            modelY = position.y,
+            modelZ = position.z
+        )
     }
+
 
     fun savePhotoToGallery(bitmap: Bitmap) {
         val filename = "${System.currentTimeMillis()}.png"
@@ -248,10 +256,13 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
         // Guardar la URL de la imagen en Firebase Realtime Database
         val database = FirebaseDatabase.getInstance()
         val photosRef = database.getReference("photos")
+        val photoInfo = arState.value ?: ARModel()
 
         val photoData = hashMapOf(
             "url" to downloadUrl,
-            // Puedes agregar más datos aquí si lo deseas, como la fecha de creación, el nombre del usuario, etc.
+            "modelX" to photoInfo.modelX,
+            "modelY" to photoInfo.modelY,
+            "modelZ" to photoInfo.modelZ
         )
 
         photosRef.push().setValue(photoData)
@@ -263,7 +274,6 @@ class ArViewModel(application: Application) : AndroidViewModel(application) {
                 // Manejar el error
             }
     }
-
 
 
 }
