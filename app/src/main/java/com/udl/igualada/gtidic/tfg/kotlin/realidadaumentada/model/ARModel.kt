@@ -1,10 +1,11 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model
 
+import android.net.Uri
 
 
-data class ARModel(
-    val isPhotoSaved: Boolean = false
-)
-
+sealed class ModelSource {
+    data class ResourceId(val id: Int) : ModelSource()
+    data class UriSource(val uri: Uri) : ModelSource()
+}
 
 
