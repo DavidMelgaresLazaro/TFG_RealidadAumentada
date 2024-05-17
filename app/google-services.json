@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "569430025273",
+    "firebase_url": "https://tfg-realidadaumentada-8e9df-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tfg-realidadaumentada-8e9df",
+    "storage_bucket": "tfg-realidadaumentada-8e9df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569430025273:android:cdfde62c609c6c43f5d9e8",
+        "android_client_info": {
+          "package_name": "com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuIA0lJxVg-lXJkteLAa89qOxhnwE5ENo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -12,8 +12,10 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.helpers.ArModelHelper
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.helpers.FileHelper
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.helpers.PhotoHelper
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.ModelSource
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.MainActivityViewModel
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.PhotoViewModel
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -27,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var arModelHelper: ArModelHelper
     private lateinit var fileHelper: FileHelper
     private var tapCount = 0
+    private lateinit var photoViewModel: PhotoViewModel
+    private lateinit var photoHelper: PhotoHelper
 
     // @TODO: No veo necesario los botones +,-, ARCore ya te permite con dos dedos hacer zoom y rotar
     // Si lo quieres implementar lo revisamos luego
@@ -44,6 +48,11 @@ class MainActivity : AppCompatActivity() {
 
         arModelHelper = ArModelHelper(arFragment)
         fileHelper = FileHelper(this)
+
+        photoViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
+        photoHelper = PhotoHelper(arFragment, photoViewModel)
+
+        setupPhotoButton()
 
         viewModel.modelSource.value = ModelSource.ResourceId(R.raw.sas__cs2_agent_model_green)
 
@@ -101,6 +110,14 @@ class MainActivity : AppCompatActivity() {
                 val fp = fileHelper.getFilePathFromUri(uri)
                 viewModel.modelSource.value = ModelSource.UriSource(Uri.parse(fp))
             }
+        }
+    }
+
+    private fun setupPhotoButton() {
+        val photoButton = findViewById<Button>(R.id.btnTakePhoto)
+        photoButton.setOnClickListener {
+            // Llamar a la función takePhoto de photoHelper
+            photoHelper.takePhoto(applicationContext)
         }
     }
 
