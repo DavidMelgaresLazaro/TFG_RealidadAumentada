@@ -11,10 +11,14 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -66,9 +70,34 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         uploadTask.addOnFailureListener { exception ->
             Log.e("PhotoViewModel", "Failed to upload photo to Firebase", exception)
         }.addOnSuccessListener { taskSnapshot ->
+            imagesRef.downloadUrl.addOnSuccessListener { uri ->
+                val photoUrl = uri.toString()
+                savePhotoMetadataToDatabase(filename, photoUrl)
+            }
             Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
         }
     }
+    private fun savePhotoMetadataToDatabase(filename: String, url: String) {
+        val database = FirebaseDatabase.getInstance()
+        val photosRef: DatabaseReference = database.getReference("photos")
+
+        val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date())
+
+        val photoMetadata = mapOf(
+            "filename" to filename,
+            "url" to url,
+            "timestamp" to timestamp
+        )
+
+        photosRef.push().setValue(photoMetadata)
+            .addOnSuccessListener {
+                Log.d("PhotoViewModel", "Photo metadata saved to database successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e("PhotoViewModel", "Failed to save photo metadata to database", exception)
+            }
+    }
 }
+
 
 
