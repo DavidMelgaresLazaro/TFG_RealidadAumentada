@@ -11,6 +11,9 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,6 +35,9 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                 resolver.openOutputStream(imageUri)?.use { outputStream ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
+                    // Save to Firebase Storage
+                    savePhotoToFirebase(bitmap, filename)
+
                     // Update UI on the main thread
                     Handler(Looper.getMainLooper()).post {
                         Toast.makeText(context, "Photo saved successfully", Toast.LENGTH_SHORT).show()
@@ -46,4 +52,23 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             Log.e("PhotoViewModel", "Failed to save photo", e)
         }
     }
+
+    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String) {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = storage.reference
+        val imagesRef: StorageReference = storageRef.child("images/$filename")
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val data = baos.toByteArray()
+
+        val uploadTask = imagesRef.putBytes(data)
+        uploadTask.addOnFailureListener { exception ->
+            Log.e("PhotoViewModel", "Failed to upload photo to Firebase", exception)
+        }.addOnSuccessListener { taskSnapshot ->
+            Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
+        }
+    }
 }
+
+
