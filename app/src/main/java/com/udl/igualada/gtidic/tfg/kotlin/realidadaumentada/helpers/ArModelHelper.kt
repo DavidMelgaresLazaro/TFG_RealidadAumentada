@@ -3,7 +3,10 @@ package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.helpers
 import android.util.Log
 import com.google.ar.core.Anchor
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.RenderableDefinition
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.ModelSource
@@ -59,6 +62,10 @@ class ArModelHelper(private val fragment: ArFragment) {
         transformableNode.parent?.removeChild(transformableNode)
         Log.d(TAG, "The transformableNode is removed from scene successfully")
     }
+
+
+
+
 
 }
 

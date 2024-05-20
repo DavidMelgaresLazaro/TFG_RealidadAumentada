@@ -12,6 +12,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.ux.TransformableNode
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -43,8 +47,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                 resolver.openOutputStream(imageUri)?.use { outputStream ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
+                    // Obtener la posición del modelo antes de subir la foto a Firebase Storage
+                    val modelPosition = getModelPosition(modelAnchorNode)
+
                     // Save to Firebase Storage
-                    savePhotoToFirebase(bitmap, filename, modelAnchorNode)
+                    savePhotoToFirebase(bitmap, filename, modelAnchorNode, modelPosition)
 
                     // Update UI on the main thread
                     Handler(Looper.getMainLooper()).post {
@@ -61,7 +68,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelAnchorNode: AnchorNode?) {
+    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
         val imagesRef: StorageReference = storageRef.child("images/$filename")
@@ -76,19 +83,22 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }.addOnSuccessListener { taskSnapshot ->
             imagesRef.downloadUrl.addOnSuccessListener { uri ->
                 val photoUrl = uri.toString()
-                savePhotoMetadataToDatabase(filename, photoUrl, modelAnchorNode)
+                savePhotoMetadataToDatabase(filename, photoUrl, modelAnchorNode, modelPosition)
             }
             Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
         }
     }
 
-    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelAnchorNode: AnchorNode?) {
+    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?) {
         val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date())
+        val modelSize = getModelSize(modelAnchorNode)
 
         val photoMetadata = mutableMapOf(
             "filename" to filename,
             "url" to url,
-            "timestamp" to timestamp
+            "time" to timestamp,
+            "size" to modelSize,
+            "position" to modelPosition
         )
 
         modelAnchorNode?.worldPosition?.let { position ->
@@ -105,6 +115,54 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                 Log.e("PhotoViewModel", "Failed to save photo metadata to database", exception)
             }
     }
+
+    private fun getModelSize(modelAnchorNode: AnchorNode?): Map<String, Float> {
+        if (modelAnchorNode == null) {
+            return emptyMap()
+        }
+
+        // Obtener el nodo del modelo
+        val modelNode = modelAnchorNode.children.firstOrNull() as? Node
+        if (modelNode == null) {
+            return emptyMap()
+        }
+
+        // Obtener las dimensiones del nodo del modelo
+        val size = modelNode.localScale
+
+        return mapOf(
+            "width" to size.x,
+            "height" to size.y,
+            "depth" to size.z
+        )
+    }
+    private fun getModelPosition(modelAnchorNode: AnchorNode?): Map<String, Float>? {
+        if (modelAnchorNode == null) {
+            return null
+        }
+
+        // Obtener la posición mundial del nodo del modelo
+        val position = modelAnchorNode.worldPosition
+
+        return mapOf(
+            "x" to position.x,
+            "y" to position.y,
+            "z" to position.z
+        )
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

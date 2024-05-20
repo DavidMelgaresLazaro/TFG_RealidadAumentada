@@ -16,4 +16,6 @@ class MainActivityViewModel: ViewModel() {
     val anchorNode: MutableLiveData<AnchorNode> = MutableLiveData()
     val transformableNode: MutableLiveData<TransformableNode> = MutableLiveData()
 
+
+
 }
