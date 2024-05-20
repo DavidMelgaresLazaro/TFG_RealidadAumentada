@@ -101,11 +101,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             "position" to modelPosition
         )
 
-        modelAnchorNode?.worldPosition?.let { position ->
-            photoMetadata["x"] = position.x.toString()
-            photoMetadata["y"] = position.y.toString()
-            photoMetadata["z"] = position.z.toString()
-        }
+
 
         photosRef.push().setValue(photoMetadata)
             .addOnSuccessListener {
