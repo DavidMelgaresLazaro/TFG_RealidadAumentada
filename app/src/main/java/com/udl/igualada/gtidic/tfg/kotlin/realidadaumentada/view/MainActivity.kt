@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -31,10 +32,6 @@ class MainActivity : AppCompatActivity() {
     private var tapCount = 0
     private lateinit var photoViewModel: PhotoViewModel
     private lateinit var photoHelper: PhotoHelper
-
-    // @TODO: No veo necesario los botones +,-, ARCore ya te permite con dos dedos hacer zoom y rotar
-    // Si lo quieres implementar lo revisamos luego
-    // Esto es una propuesta que aún se puede mejorar, pero tiene ya los conceptos separados
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,10 +113,13 @@ class MainActivity : AppCompatActivity() {
     private fun setupPhotoButton() {
         val photoButton = findViewById<Button>(R.id.btnTakePhoto)
         photoButton.setOnClickListener {
-            // Llamar a la función takePhoto de photoHelper
-            photoHelper.takePhoto(applicationContext)
+            // Obtener el anchorNode del ViewModel y pasar a takePhoto
+            val anchorNode = viewModel.anchorNode.value
+            if (anchorNode != null) {
+                photoHelper.takePhoto(applicationContext, anchorNode)
+            } else {
+                Toast.makeText(this, "AnchorNode not found", Toast.LENGTH_SHORT).show()
+            }
         }
     }
-
-
 }

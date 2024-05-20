@@ -11,18 +11,22 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import com.google.ar.sceneform.AnchorNode
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
-import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
-    fun savePhotoToGallery(context: Context, bitmap: Bitmap) {
+    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    private val photosRef: DatabaseReference = database.getReference("photos")
+    private val coordinatesRef: DatabaseReference = database.getReference("coordinates")
+
+    fun savePhotoToGallery(context: Context, bitmap: Bitmap, modelAnchorNode: AnchorNode?) {
         val filename = "${System.currentTimeMillis()}.png"
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
@@ -40,7 +44,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
                     // Save to Firebase Storage
-                    savePhotoToFirebase(bitmap, filename)
+                    savePhotoToFirebase(bitmap, filename, modelAnchorNode)
 
                     // Update UI on the main thread
                     Handler(Looper.getMainLooper()).post {
@@ -57,7 +61,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String) {
+    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelAnchorNode: AnchorNode?) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
         val imagesRef: StorageReference = storageRef.child("images/$filename")
@@ -72,22 +76,26 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }.addOnSuccessListener { taskSnapshot ->
             imagesRef.downloadUrl.addOnSuccessListener { uri ->
                 val photoUrl = uri.toString()
-                savePhotoMetadataToDatabase(filename, photoUrl)
+                savePhotoMetadataToDatabase(filename, photoUrl, modelAnchorNode)
             }
             Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
         }
     }
-    private fun savePhotoMetadataToDatabase(filename: String, url: String) {
-        val database = FirebaseDatabase.getInstance()
-        val photosRef: DatabaseReference = database.getReference("photos")
 
+    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelAnchorNode: AnchorNode?) {
         val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date())
 
-        val photoMetadata = mapOf(
+        val photoMetadata = mutableMapOf(
             "filename" to filename,
             "url" to url,
             "timestamp" to timestamp
         )
+
+        modelAnchorNode?.worldPosition?.let { position ->
+            photoMetadata["x"] = position.x.toString()
+            photoMetadata["y"] = position.y.toString()
+            photoMetadata["z"] = position.z.toString()
+        }
 
         photosRef.push().setValue(photoMetadata)
             .addOnSuccessListener {
@@ -98,6 +106,5 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             }
     }
 }
-
 
 
