@@ -8,6 +8,7 @@ import android.view.PixelCopy
 import android.widget.Toast
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ux.ArFragment
+import com.google.ar.core.Frame
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.PhotoViewModel
 
 class PhotoHelper(
@@ -24,10 +25,17 @@ class PhotoHelper(
             handlerThread.start()
             PixelCopy.request(arView, bitmap, { copyResult ->
                 if (copyResult == PixelCopy.SUCCESS) {
-                    // Llamar al ViewModel para guardar la foto en la galería incluyendo el AnchorNode
-                    photoViewModel.savePhotoToGallery(context, bitmap, modelAnchorNode)
-                } else {
-                    Toast.makeText(context, "Failed to take photo", Toast.LENGTH_SHORT).show()
+                    val arFrame = arView.arFrame
+
+                    val devicePosition = photoViewModel.getDevicePosition(arFrame)
+
+                    // Verificar que devicePosition no sea nulo antes de llamar a la función savePhotoToGallery
+                    if (devicePosition != null) {
+                        photoViewModel.savePhotoToGallery(context, bitmap, modelAnchorNode, devicePosition)
+                    } else {
+                        Toast.makeText(context, "Failed to get device position", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
                 handlerThread.quitSafely()
             }, Handler(handlerThread.looper))
@@ -35,6 +43,5 @@ class PhotoHelper(
             Toast.makeText(context, "AR view is not available", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
-
-

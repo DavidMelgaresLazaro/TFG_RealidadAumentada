@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import com.google.ar.core.Frame
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
@@ -21,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,7 +32,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     private val photosRef: DatabaseReference = database.getReference("photos")
     private val coordinatesRef: DatabaseReference = database.getReference("coordinates")
 
-    fun savePhotoToGallery(context: Context, bitmap: Bitmap, modelAnchorNode: AnchorNode?) {
+    fun savePhotoToGallery(context: Context, bitmap: Bitmap, modelAnchorNode: AnchorNode?, devicePosition: Map<String, Float>?) {
         val filename = "${System.currentTimeMillis()}.png"
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
@@ -51,7 +53,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                     val modelPosition = getModelPosition(modelAnchorNode)
 
                     // Save to Firebase Storage
-                    savePhotoToFirebase(bitmap, filename, modelAnchorNode, modelPosition)
+                    savePhotoToFirebase(bitmap, filename, modelAnchorNode, modelPosition, devicePosition)
 
                     // Update UI on the main thread
                     Handler(Looper.getMainLooper()).post {
@@ -68,7 +70,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?) {
+    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
         val imagesRef: StorageReference = storageRef.child("images/$filename")
@@ -83,25 +85,25 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }.addOnSuccessListener { taskSnapshot ->
             imagesRef.downloadUrl.addOnSuccessListener { uri ->
                 val photoUrl = uri.toString()
-                savePhotoMetadataToDatabase(filename, photoUrl, modelAnchorNode, modelPosition)
+                savePhotoMetadataToDatabase(filename, photoUrl, modelAnchorNode, modelPosition, devicePosition)
             }
             Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
         }
     }
 
-    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?) {
+    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?) {
         val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date())
         val modelSize = getModelSize(modelAnchorNode)
+        val horizontalDistance = getHorizontalDistanceToModel(devicePosition, modelPosition)
 
         val photoMetadata = mutableMapOf(
             "filename" to filename,
             "url" to url,
             "time" to timestamp,
             "size" to modelSize,
-            "position" to modelPosition
+            "position" to modelPosition,
+            "distance" to horizontalDistance
         )
-
-
 
         photosRef.push().setValue(photoMetadata)
             .addOnSuccessListener {
@@ -132,6 +134,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             "depth" to size.z
         )
     }
+
     private fun getModelPosition(modelAnchorNode: AnchorNode?): Map<String, Float>? {
         if (modelAnchorNode == null) {
             return null
@@ -147,18 +150,33 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
+    private fun getHorizontalDistanceToModel(devicePosition: Map<String, Float>?, modelPosition: Map<String, Float>?): Float {
+        if (devicePosition == null || modelPosition == null) {
+            return 0f
+        }
 
+        val deviceX = devicePosition["x"] ?: 0f
+        val deviceZ = devicePosition["z"] ?: 0f
+        val modelX = modelPosition["x"] ?: 0f
+        val modelZ = modelPosition["z"] ?: 0f
 
+        return kotlin.math.sqrt((deviceX - modelX) * (deviceX - modelX) + (deviceZ - modelZ) * (deviceZ - modelZ))
+    }
 
+    fun getDevicePosition(arFrame: Frame?): Map<String, Float>? {
+        val cameraPose = arFrame?.camera?.pose
+        val cameraPosition = cameraPose?.let {
+            val translation = it.translation
+            Triple(translation.get(0).toFloat(), translation.get(1).toFloat(), translation.get(2).toFloat())
+        }
 
-
-
-
-
-
+        return if (cameraPosition != null) {
+            mapOf("x" to cameraPosition.first, "y" to cameraPosition.second, "z" to cameraPosition.third)
+        } else {
+            null
+        }
+    }
 
 
 
 }
-
-
