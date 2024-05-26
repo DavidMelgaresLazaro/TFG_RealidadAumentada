@@ -1,5 +1,6 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.Photo
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view.PhotoDetailActivity
 
 class PhotoAdapter : ListAdapter<Photo, PhotoAdapter.PhotoViewHolder>(PhotoDiffCallback()) {
 
@@ -35,6 +37,12 @@ class PhotoAdapter : ListAdapter<Photo, PhotoAdapter.PhotoViewHolder>(PhotoDiffC
             Glide.with(itemView.context)
                 .load(photo.url)
                 .into(imageView)
+
+            itemView.setOnClickListener {
+                val intent = Intent(itemView.context, PhotoDetailActivity::class.java)
+                intent.putExtra("photo", photo)
+                itemView.context.startActivity(intent)
+            }
         }
     }
 }
