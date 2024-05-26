@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         setupPhotoButton()
 
-        viewModel.modelSource.value = ModelSource.ResourceId(R.raw.sas__cs2_agent_model_green)
+        viewModel.updateModelSource(ModelSource.ResourceId(R.raw.sas__cs2_agent_model_green))
 
         arFragment.setOnTapArPlaneListener { hitResult, plane, _ ->
             if (tapCount >= MAX_ALLOWED_TAPS) {
@@ -63,11 +63,11 @@ class MainActivity : AppCompatActivity() {
             val anchor = hitResult.createAnchor()
             val anchorNode = arModelHelper.createAnchorNode(anchor)
             anchorNode?.let {
-                viewModel.anchorNode.value = it
+                viewModel.updateAnchorNode(it)
                 viewModel.modelSource.value?.let { source ->
-                    arModelHelper.placeObject(it, source).thenAccept { triple ->
-                        val (_, transformableNode, _) = triple
-                        viewModel.transformableNode.value = transformableNode
+                    arModelHelper.placeObject(it, source).thenAccept { modelInfo ->
+                        viewModel.updateTransformableNode(modelInfo.transformableNode)
+                        viewModel.updateModelName(modelInfo.name)
                     }
                 }
             }
@@ -82,14 +82,13 @@ class MainActivity : AppCompatActivity() {
                     viewModel.transformableNode.value?.let { transformableNode ->
                         arModelHelper.removeTransformableNode(transformableNode)
                     }
-                    arModelHelper.placeObject(anchorNode, source).thenAccept { triple ->
-                        val (_, newTransformableNode, _) = triple
-                        viewModel.transformableNode.value = newTransformableNode
+                    arModelHelper.placeObject(anchorNode, source).thenAccept { modelInfo ->
+                        viewModel.updateTransformableNode(modelInfo.transformableNode)
+                        viewModel.updateModelName(modelInfo.name)
                     }
                 }
             }
         })
-
     }
 
     private fun setupSelectModelButton() {
@@ -105,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PICK_MODEL_REQUEST_CODE && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
                 val fp = fileHelper.getFilePathFromUri(uri)
-                viewModel.modelSource.value = ModelSource.UriSource(Uri.parse(fp))
+                viewModel.updateModelSource(ModelSource.UriSource(Uri.parse(fp)))
             }
         }
     }
@@ -113,12 +112,12 @@ class MainActivity : AppCompatActivity() {
     private fun setupPhotoButton() {
         val photoButton = findViewById<Button>(R.id.btnTakePhoto)
         photoButton.setOnClickListener {
-            // Obtener el anchorNode del ViewModel y pasar a takePhoto
             val anchorNode = viewModel.anchorNode.value
-            if (anchorNode != null) {
-                photoHelper.takePhoto(applicationContext, anchorNode)
+            val modelName = viewModel.modelName.value
+            if (anchorNode != null && modelName != null) {
+                photoHelper.takePhoto(applicationContext, anchorNode, modelName)
             } else {
-                Toast.makeText(this, "AnchorNode not found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "AnchorNode or ModelName not found", Toast.LENGTH_SHORT).show()
             }
         }
     }

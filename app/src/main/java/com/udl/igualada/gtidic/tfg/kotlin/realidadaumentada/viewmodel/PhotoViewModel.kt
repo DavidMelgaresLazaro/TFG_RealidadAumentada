@@ -12,17 +12,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.google.ar.core.Frame
-import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.Node
-import com.google.ar.sceneform.math.Vector3
-import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.TransformableNode
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
-import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,9 +25,17 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val photosRef: DatabaseReference = database.getReference("photos")
-    private val coordinatesRef: DatabaseReference = database.getReference("coordinates")
 
-    fun savePhotoToGallery(context: Context, bitmap: Bitmap, modelAnchorNode: AnchorNode?, devicePosition: Map<String, Float>?) {
+    /**
+     * Saves a photo to the gallery and uploads it to Firebase Storage along with metadata.
+     *
+     * @param context The context to use for accessing resources.
+     * @param bitmap The bitmap to be saved and uploaded.
+     * @param transformableNode The node associated with the photo (can be null).
+     * @param modelName The name of the model being captured (can be null).
+     * @param devicePosition The device position when the photo was taken.
+     */
+    fun savePhotoToGallery(context: Context, bitmap: Bitmap, transformableNode: TransformableNode?, modelName: String?, devicePosition: Map<String, Float>?) {
         val filename = "${System.currentTimeMillis()}.png"
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
@@ -44,16 +47,15 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
         try {
             uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
             uri?.let { imageUri ->
                 resolver.openOutputStream(imageUri)?.use { outputStream ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
-                    // Obtener la posición del modelo antes de subir la foto a Firebase Storage
-                    val modelPosition = getModelPosition(modelAnchorNode)
+                    // Get model position before uploading photo to Firebase Storage
+                    val modelPosition = getModelPosition(transformableNode)
 
                     // Save to Firebase Storage
-                    savePhotoToFirebase(bitmap, filename, modelAnchorNode, modelPosition, devicePosition)
+                    savePhotoToFirebase(bitmap, filename, modelName, transformableNode, modelPosition, devicePosition)
 
                     // Update UI on the main thread
                     Handler(Looper.getMainLooper()).post {
@@ -64,13 +66,14 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } ?: Log.e("PhotoViewModel", "Failed to create image file")
         } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Failed to save photo", Toast.LENGTH_SHORT).show()
             Log.e("PhotoViewModel", "Failed to save photo", e)
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, "Failed to save photo", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?) {
+    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelName: String?, transformableNode: TransformableNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
         val imagesRef: StorageReference = storageRef.child("images/$filename")
@@ -85,21 +88,22 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }.addOnSuccessListener { taskSnapshot ->
             imagesRef.downloadUrl.addOnSuccessListener { uri ->
                 val photoUrl = uri.toString()
-                savePhotoMetadataToDatabase(filename, photoUrl, modelAnchorNode, modelPosition, devicePosition)
+                savePhotoMetadataToDatabase(filename, photoUrl, modelName, transformableNode, modelPosition, devicePosition)
             }
             Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
         }
     }
 
-    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelAnchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?) {
+    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelName: String?, transformableNode: TransformableNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?) {
         val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date())
-        val modelSize = getModelSize(modelAnchorNode)
+        val modelSize = getModelSize(transformableNode)
         val horizontalDistance = getHorizontalDistanceToModel(devicePosition, modelPosition)
 
         val photoMetadata = mutableMapOf(
             "filename" to filename,
             "url" to url,
             "time" to timestamp,
+            "modelName" to modelName,  // Add modelName to metadata
             "size" to modelSize,
             "position" to modelPosition,
             "distance" to horizontalDistance
@@ -114,40 +118,24 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             }
     }
 
-    private fun getModelSize(modelAnchorNode: AnchorNode?): Map<String, Float> {
-        if (modelAnchorNode == null) {
-            return emptyMap()
-        }
-
-        // Obtener el nodo del modelo
-        val modelNode = modelAnchorNode.children.firstOrNull() as? Node
-        if (modelNode == null) {
-            return emptyMap()
-        }
-
-        // Obtener las dimensiones del nodo del modelo
-        val size = modelNode.localScale
-
-        return mapOf(
-            "width" to size.x,
-            "height" to size.y,
-            "depth" to size.z
-        )
+    private fun getModelSize(transformableNode: TransformableNode?): Map<String, Float> {
+        return transformableNode?.localScale?.let { size ->
+            mapOf(
+                "width" to size.x,
+                "height" to size.y,
+                "depth" to size.z
+            )
+        } ?: emptyMap()
     }
 
-    private fun getModelPosition(modelAnchorNode: AnchorNode?): Map<String, Float>? {
-        if (modelAnchorNode == null) {
-            return null
+    private fun getModelPosition(transformableNode: TransformableNode?): Map<String, Float>? {
+        return transformableNode?.worldPosition?.let { position ->
+            mapOf(
+                "x" to position.x,
+                "y" to position.y,
+                "z" to position.z
+            )
         }
-
-        // Obtener la posición mundial del nodo del modelo
-        val position = modelAnchorNode.worldPosition
-
-        return mapOf(
-            "x" to position.x,
-            "y" to position.y,
-            "z" to position.z
-        )
     }
 
     private fun getHorizontalDistanceToModel(devicePosition: Map<String, Float>?, modelPosition: Map<String, Float>?): Float {
@@ -164,19 +152,13 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getDevicePosition(arFrame: Frame?): Map<String, Float>? {
-        val cameraPose = arFrame?.camera?.pose
-        val cameraPosition = cameraPose?.let {
-            val translation = it.translation
-            Triple(translation.get(0).toFloat(), translation.get(1).toFloat(), translation.get(2).toFloat())
-        }
-
-        return if (cameraPosition != null) {
-            mapOf("x" to cameraPosition.first, "y" to cameraPosition.second, "z" to cameraPosition.third)
-        } else {
-            null
+        return arFrame?.camera?.pose?.let { cameraPose ->
+            val translation = cameraPose.translation
+            mapOf(
+                "x" to translation[0].toFloat(),
+                "y" to translation[1].toFloat(),
+                "z" to translation[2].toFloat()
+            )
         }
     }
-
-
-
 }
