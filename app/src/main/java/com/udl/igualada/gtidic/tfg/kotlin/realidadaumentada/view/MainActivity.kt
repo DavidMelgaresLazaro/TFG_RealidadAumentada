@@ -1,9 +1,13 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -104,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PICK_MODEL_REQUEST_CODE && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
                 val fp = fileHelper.getFilePathFromUri(uri)
-                viewModel.updateModelSource(ModelSource.UriSource(Uri.parse(fp)))
+                viewModel.updateModelSource(ModelSource.UriSource(uri))
             }
         }
     }
@@ -115,10 +119,30 @@ class MainActivity : AppCompatActivity() {
             val anchorNode = viewModel.anchorNode.value
             val modelName = viewModel.modelName.value
             if (anchorNode != null && modelName != null) {
-                photoHelper.takePhoto(applicationContext, anchorNode, modelName)
+                showCommentDialog(this) { comment ->
+                    photoHelper.takePhoto(applicationContext, anchorNode, modelName, comment)
+                }
             } else {
                 Toast.makeText(this, "AnchorNode or ModelName not found", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun showCommentDialog(context: Context, onCommentSubmitted: (String) -> Unit) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_comment, null)
+        val editTextComment = dialogView.findViewById<EditText>(R.id.editTextComment)
+        val buttonSubmit = dialogView.findViewById<Button>(R.id.buttonSubmit)
+
+        val dialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .create()
+
+        buttonSubmit.setOnClickListener {
+            val comment = editTextComment.text.toString()
+            onCommentSubmitted(comment)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }
