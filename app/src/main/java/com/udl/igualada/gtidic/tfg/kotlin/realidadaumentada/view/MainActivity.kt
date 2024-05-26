@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         photoHelper = PhotoHelper(arFragment, photoViewModel)
 
         setupPhotoButton()
+        setupViewPhotosButton()
 
         viewModel.updateModelSource(ModelSource.ResourceId(R.raw.sas__cs2_agent_model_green))
 
@@ -99,6 +100,14 @@ class MainActivity : AppCompatActivity() {
         val selectModelButton = findViewById<Button>(R.id.btnSelectModel)
         selectModelButton.setOnClickListener {
             startActivityForResult(fileHelper.openFileSelector(), PICK_MODEL_REQUEST_CODE)
+        }
+    }
+
+    private fun setupViewPhotosButton() {
+        val viewPhotosButton = findViewById<Button>(R.id.buttonViewPhotos)
+        viewPhotosButton.setOnClickListener {
+            val intent = Intent(this, PhotoListActivity::class.java)
+            startActivity(intent)
         }
     }
 
