@@ -21,6 +21,8 @@ import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.helpers.PhotoHelper
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.ModelSource
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.MainActivityViewModel
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.PhotoViewModel
+import java.io.File
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -79,6 +81,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupSelectModelButton()
+        setupViewPhotosButton()
 
         viewModel.modelSource.observe(this, Observer { modelSource ->
             modelSource?.let { source ->
@@ -102,13 +105,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupViewPhotosButton() {
+        val viewPhotosButton = findViewById<Button>(R.id.btnViewPhotos)
+        viewPhotosButton.setOnClickListener {
+            val intent = Intent(this, PhotosActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_MODEL_REQUEST_CODE && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
-                val fp = fileHelper.getFilePathFromUri(uri)
-                viewModel.updateModelSource(ModelSource.UriSource(uri))
+                try {
+                    val filePath = fileHelper.getFilePathFromUri(uri)
+                    viewModel.updateModelSource(ModelSource.UriSource(Uri.fromFile(File(filePath))))
+                } catch (e: IOException) {
+                    Toast.makeText(this, "Failed to load model", Toast.LENGTH_SHORT).show()
+                    e.printStackTrace()
+                }
             }
         }
     }

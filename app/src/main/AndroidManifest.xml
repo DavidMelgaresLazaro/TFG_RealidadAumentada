@@ -23,6 +23,8 @@
         android:required="true" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -50,6 +52,9 @@
             android:name=".view.MainActivity"
             android:exported="true">
         </activity>
+
+
+        <activity android:name=".view.PhotosActivity" />
     </application>
 
 </manifest>
