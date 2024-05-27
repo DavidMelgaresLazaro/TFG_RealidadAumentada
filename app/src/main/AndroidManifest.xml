@@ -49,6 +49,10 @@
 
         <activity android:name=".view.PhotoDetailActivity" />
 
+        <activity android:name=".view.RegisterActivity" />
+
+        <activity android:name=".view.LoginActivity" />
+
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />

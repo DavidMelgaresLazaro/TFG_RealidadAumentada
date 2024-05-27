@@ -14,6 +14,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.ar.core.Frame
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ux.TransformableNode
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -106,14 +107,27 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             "localUri" to localUri
         )
 
-        photosRef.push().setValue(photoMetadata)
-            .addOnSuccessListener {
-                Log.d("PhotoViewModel", "Photo metadata saved to database successfully")
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userEmail = currentUser.email
+            if (userEmail != null) {
+                val userPhotosRef = photosRef.child(userEmail.replace(".", "_")).push() // Reemplaza los puntos en el correo para evitar problemas en Firebase
+                userPhotosRef.setValue(photoMetadata)
+                    .addOnSuccessListener {
+                        Log.d("PhotoViewModel", "Photo metadata saved to database successfully")
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("PhotoViewModel", "Failed to save photo metadata to database", exception)
+                    }
+            } else {
+                Log.e("PhotoViewModel", "User email is null, cannot save photo metadata")
             }
-            .addOnFailureListener { exception ->
-                Log.e("PhotoViewModel", "Failed to save photo metadata to database", exception)
-            }
+        } else {
+            Log.e("PhotoViewModel", "User not authenticated, cannot save photo metadata")
+        }
     }
+
+
 
 
     private fun getModelSize(anchorNode: AnchorNode): Map<String, Float> {

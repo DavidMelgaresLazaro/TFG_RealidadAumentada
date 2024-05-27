@@ -76,5 +76,7 @@ class PhotoListActivity : AppCompatActivity() {
             Toast.makeText(this, "Failed to delete photo", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }
 
