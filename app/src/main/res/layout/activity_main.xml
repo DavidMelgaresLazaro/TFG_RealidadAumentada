@@ -6,24 +6,49 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
-    <Button
-        android:id="@+id/btnTakePhoto"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:background="@drawable/button_circle"
-        android:contentDescription="@string/take_photo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
+    <!-- Contenedor del área de cámara -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/activity_main__container__camera_area"
         android:name="com.google.ar.sceneform.ux.ArFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/btnTakePhoto"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Botón para tomar foto -->
+    <Button
+        android:id="@+id/btnTakePhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Take Photo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+    <!-- Botón para seleccionar modelo -->
+    <Button
+        android:id="@+id/btnSelectModel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Model"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnTakePhoto" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp" />
+
+    <!-- Botón para ver fotos -->
+    <Button
+        android:id="@+id/buttonViewPhotos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Photos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

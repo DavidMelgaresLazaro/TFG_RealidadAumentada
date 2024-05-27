@@ -1,11 +1,11 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model
 
-import com.google.ar.core.Anchor
-import com.google.ar.sceneform.rendering.ModelRenderable
+import android.net.Uri
 
 
-data class ARModel(
-    val anchor: Anchor,
-    val modelRenderable: ModelRenderable?
-)
+sealed class ModelSource {
+    data class ResourceId(val id: Int) : ModelSource()
+    data class UriSource(val uri: Uri) : ModelSource()
+}
+
 
