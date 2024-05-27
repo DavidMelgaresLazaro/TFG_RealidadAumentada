@@ -1,19 +1,33 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
+import android.Manifest
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
+import java.io.File
 
 class PhotoDetailActivity : AppCompatActivity() {
 
@@ -27,6 +41,8 @@ class PhotoDetailActivity : AppCompatActivity() {
     private lateinit var textViewDistance: TextView
     private lateinit var deleteButton: Button
     private lateinit var photoKey: String
+    private var photoUrl: String? = null
+    private var localUri: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,17 +65,20 @@ class PhotoDetailActivity : AppCompatActivity() {
         deleteButton.setOnClickListener {
             showDeleteDialog()
         }
+
+        checkStoragePermissions()
     }
 
     private fun loadPhotoDetails() {
         val database = FirebaseDatabase.getInstance().reference.child("photos").child(photoKey)
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val photoUrl = snapshot.child("url").getValue(String::class.java)
+                photoUrl = snapshot.child("url").getValue(String::class.java)
                 val photoComment = snapshot.child("comment").getValue(String::class.java)
                 val photoModelName = snapshot.child("modelName").getValue(String::class.java)
                 val filename = snapshot.child("filename").getValue(String::class.java)
                 val timestamp = snapshot.child("time").getValue(String::class.java)
+                localUri = snapshot.child("localUri").getValue(String::class.java)
 
                 val sizeIndicator = object : GenericTypeIndicator<Map<String, Float>>() {}
                 val positionIndicator = object : GenericTypeIndicator<Map<String, Float>>() {}
@@ -101,10 +120,51 @@ class PhotoDetailActivity : AppCompatActivity() {
     private fun deletePhoto() {
         val database = FirebaseDatabase.getInstance().reference.child("photos").child(photoKey)
         database.removeValue().addOnSuccessListener {
+            photoUrl?.let { url ->
+                deletePhotoFromStorage(url)
+            }
+            localUri?.let { uri ->
+                deletePhotoFromDevice(uri)
+            }
             Toast.makeText(this, "Photo deleted", Toast.LENGTH_SHORT).show()
             finish() // Close the activity after deletion
         }.addOnFailureListener {
             Toast.makeText(this, "Failed to delete photo", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun deletePhotoFromStorage(url: String) {
+        val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(url)
+        storageReference.delete().addOnSuccessListener {
+            Toast.makeText(this, "Photo deleted from storage", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Failed to delete photo from storage", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun deletePhotoFromDevice(uri: String) {
+        val resolver: ContentResolver = contentResolver
+        try {
+            val photoUri = Uri.parse(uri)
+            resolver.delete(photoUri, null, null)
+            Toast.makeText(this, "Photo deleted from device", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Failed to delete photo from device", Toast.LENGTH_SHORT).show()
+            Log.e("PhotoDetailActivity", "Failed to delete photo from device", e)
+        }
+    }
+
+    private fun checkStoragePermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
+        val requestCode = 1
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, permissions, requestCode)
         }
     }
 }

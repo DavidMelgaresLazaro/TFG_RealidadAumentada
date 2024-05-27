@@ -49,7 +49,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                     val modelPosition = getModelPosition(anchorNode)
 
                     // Save to Firebase Storage
-                    savePhotoToFirebase(bitmap, filename, modelName, anchorNode, modelPosition, devicePosition, comment)
+                    savePhotoToFirebase(bitmap, filename, modelName, anchorNode, modelPosition, devicePosition, comment, imageUri.toString())
 
                     // Update UI on the main thread
                     Handler(Looper.getMainLooper()).post {
@@ -66,7 +66,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelName: String?, anchorNode: AnchorNode, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?, comment: String) {
+
+    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelName: String?, anchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?, comment: String, localUri: String) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
         val imagesRef: StorageReference = storageRef.child("images/$filename")
@@ -81,15 +82,16 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }.addOnSuccessListener { taskSnapshot ->
             imagesRef.downloadUrl.addOnSuccessListener { uri ->
                 val photoUrl = uri.toString()
-                savePhotoMetadataToDatabase(filename, photoUrl, modelName, anchorNode, modelPosition, devicePosition, comment)
+                savePhotoMetadataToDatabase(filename, photoUrl, modelName, anchorNode, modelPosition, devicePosition, comment, localUri)
             }
             Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
         }
     }
 
-    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelName: String?, anchorNode: AnchorNode, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?, comment: String) {
+
+    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelName: String?, anchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?, comment: String, localUri: String) {
         val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date())
-        val modelSize = getModelSize(anchorNode)
+        val modelSize = anchorNode?.let { getModelSize(it) }
         val horizontalDistance = getHorizontalDistanceToModel(devicePosition, modelPosition)
 
         val photoMetadata = mutableMapOf(
@@ -100,7 +102,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             "size" to modelSize,
             "position" to modelPosition,
             "distance" to horizontalDistance,
-            "comment" to comment
+            "comment" to comment,
+            "localUri" to localUri
         )
 
         photosRef.push().setValue(photoMetadata)
@@ -111,6 +114,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                 Log.e("PhotoViewModel", "Failed to save photo metadata to database", exception)
             }
     }
+
 
     private fun getModelSize(anchorNode: AnchorNode): Map<String, Float> {
         val transformableNode = anchorNode.children.firstOrNull { it is TransformableNode } as? TransformableNode
