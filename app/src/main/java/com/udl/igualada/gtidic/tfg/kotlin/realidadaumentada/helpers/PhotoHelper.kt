@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.view.PixelCopy
 import android.widget.Toast
+import com.google.ar.core.Frame
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -16,7 +17,7 @@ class PhotoHelper(
     private val photoViewModel: PhotoViewModel
 ) {
 
-    fun takePhoto(context: Context, anchorNode: AnchorNode, modelName: String?, comment: String) {
+    fun takePhoto(context: Context, anchorNode: AnchorNode, modelName: String, comment: String) {
         val arView = arFragment.arSceneView
 
         if (arView != null) {
@@ -27,7 +28,7 @@ class PhotoHelper(
                 if (copyResult == PixelCopy.SUCCESS) {
                     val arFrame = arView.arFrame
 
-                    val devicePosition = photoViewModel.getDevicePosition(arFrame)
+                    val devicePosition = getDevicePosition(arFrame)
 
                     if (devicePosition != null) {
                         photoViewModel.savePhotoToGallery(context, bitmap, anchorNode, modelName, devicePosition, comment)
@@ -41,5 +42,18 @@ class PhotoHelper(
         } else {
             Toast.makeText(context, "AR view is not available", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun getDevicePosition(arFrame: Frame?): Map<String, Float>? {
+        val cameraPose = arFrame?.camera?.pose
+        val cameraPosition = cameraPose?.let {
+            val translation = it.translation
+            mapOf(
+                "x" to translation[0].toFloat(),
+                "y" to translation[1].toFloat(),
+                "z" to translation[2].toFloat()
+            )
+        }
+        return cameraPosition
     }
 }

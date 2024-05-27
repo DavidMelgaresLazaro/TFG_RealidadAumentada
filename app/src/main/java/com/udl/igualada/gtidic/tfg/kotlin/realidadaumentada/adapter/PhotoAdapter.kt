@@ -5,84 +5,51 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.firebase.database.FirebaseDatabase
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
-import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.Photo
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view.PhotoDetailActivity
 
-class PhotoAdapter(
-    private val context: Context,
-    private val photos: List<Photo>,
-    private val photoKeys: List<String>
-) : BaseAdapter() {
+class PhotoAdapter(private val context: Context, private val photoList: List<Map<String, Any>>) :
+    RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
-    override fun getCount(): Int {
-        return photos.size
+    inner class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageView: ImageView = itemView.findViewById(R.id.imageView)
+        val textViewFilename: TextView = itemView.findViewById(R.id.textViewFilename)
+        val textViewComment: TextView = itemView.findViewById(R.id.textViewComment)
+        val textViewModelName: TextView = itemView.findViewById(R.id.textViewModelName)
     }
 
-    override fun getItem(position: Int): Any {
-        return photos[position]
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
+        val view = LayoutInflater.from(context).inflate(R.layout.photo_list_item, parent, false)
+        return PhotoViewHolder(view)
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
+        val photoData = photoList[position]
+        val url = photoData["url"] as? String
+        val filename = photoData["filename"] as? String
+        val comment = photoData["comment"] as? String
+        val modelName = photoData["modelName"] as? String
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View = convertView ?: LayoutInflater.from(context).inflate(R.layout.photo_list_item, parent, false)
+        if (url != null) {
+            Glide.with(context).load(url).into(holder.imageView)
+        }
 
-        val photo = photos[position]
-        val photoKey = photoKeys[position]
+        holder.textViewFilename.text = filename ?: "Unknown"
+        holder.textViewComment.text = comment ?: "No comment"
+        holder.textViewModelName.text = modelName ?: "Unknown"
 
-        val imageView = view.findViewById<ImageView>(R.id.photoImageView)
-        val textViewComment = view.findViewById<TextView>(R.id.textViewComment)
-        val textViewModelName = view.findViewById<TextView>(R.id.textViewModelName)
-
-        Glide.with(context).load(photo.url).into(imageView)
-        textViewComment.text = photo.comment
-        textViewModelName.text = photo.modelName
-
-        view.setOnClickListener {
-            val intent = Intent(context, PhotoDetailActivity::class.java).apply {
-                putExtra("photoKey", photoKey) // Asegúrate de que se pase la clave de la foto
-            }
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, PhotoDetailActivity::class.java)
+            intent.putExtra("filename", filename)
             context.startActivity(intent)
         }
-
-        view.setOnLongClickListener {
-            showDeleteDialog(photoKey, position)
-            true
-        }
-
-        return view
     }
 
-    private fun showDeleteDialog(photoKey: String, position: Int) {
-        val dialog = AlertDialog.Builder(context)
-            .setTitle("Delete Photo")
-            .setMessage("Are you sure you want to delete this photo?")
-            .setPositiveButton("Yes") { _, _ ->
-                deletePhoto(photoKey, position)
-            }
-            .setNegativeButton("No", null)
-            .create()
-
-        dialog.show()
-    }
-
-    private fun deletePhoto(photoKey: String, position: Int) {
-        val database = FirebaseDatabase.getInstance().reference.child("photos").child(photoKey)
-        database.removeValue().addOnSuccessListener {
-            (photos as MutableList).removeAt(position)
-            (photoKeys as MutableList).removeAt(position)
-            notifyDataSetChanged()
-        }.addOnFailureListener {
-            // Handle failure
-        }
+    override fun getItemCount(): Int {
+        return photoList.size
     }
 }

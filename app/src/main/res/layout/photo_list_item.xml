@@ -6,9 +6,9 @@
     android:padding="8dp">
 
     <ImageView
-        android:id="@+id/photoImageView"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:scaleType="centerCrop" />
 
     <LinearLayout
@@ -16,15 +16,22 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingStart="8dp">
+
+        <TextView
+            android:id="@+id/textViewFilename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filename"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textViewComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Comment"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/textViewModelName"
@@ -33,4 +40,5 @@
             android:text="Model Name"
             android:textSize="12sp" />
     </LinearLayout>
+
 </LinearLayout>
