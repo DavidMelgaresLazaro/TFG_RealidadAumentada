@@ -96,11 +96,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             "filename" to filename,
             "url" to url,
             "time" to timestamp,
-            "modelName" to modelName,  // Add modelName to metadata
+            "modelName" to modelName,
             "size" to modelSize,
             "position" to modelPosition,
             "distance" to horizontalDistance,
-            "comment" to comment  // Add comment to metadata
+            "comment" to comment
         )
 
         photosRef.push().setValue(photoMetadata)

@@ -6,57 +6,57 @@
     android:padding="16dp">
 
     <ImageView
-        android:id="@+id/imageViewDetailPhoto"
+        android:id="@+id/photoDetailImageView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:contentDescription="Photo" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="centerCrop" />
 
     <TextView
-        android:id="@+id/textViewDetailModelName"
+        android:id="@+id/photoDetailComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Model Name"
-        android:textSize="16sp"
-        android:paddingTop="8dp" />
+        android:padding="8dp" />
 
     <TextView
-        android:id="@+id/textViewDetailComment"
+        android:id="@+id/photoDetailModelName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Comment"
-        android:textSize="14sp"
-        android:paddingTop="4dp" />
+        android:padding="8dp" />
 
     <TextView
-        android:id="@+id/textViewDetailTime"
+        android:id="@+id/photoDetailFilename"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Time"
-        android:textSize="14sp"
-        android:paddingTop="4dp" />
+        android:padding="8dp" />
 
     <TextView
-        android:id="@+id/textViewDetailSize"
+        android:id="@+id/photoDetailTimestamp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Size"
-        android:textSize="14sp"
-        android:paddingTop="4dp" />
+        android:padding="8dp" />
 
     <TextView
-        android:id="@+id/textViewDetailPosition"
+        android:id="@+id/photoDetailSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Position"
-        android:textSize="14sp"
-        android:paddingTop="4dp" />
+        android:padding="8dp" />
 
     <TextView
-        android:id="@+id/textViewDetailDistance"
+        android:id="@+id/photoDetailPosition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Distance"
-        android:textSize="14sp"
-        android:paddingTop="4dp" />
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/photoDetailDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/deletePhotoButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Photo" />
 </LinearLayout>
