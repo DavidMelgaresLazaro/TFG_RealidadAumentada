@@ -1,5 +1,6 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +9,6 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -42,30 +42,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Verificar si el usuario está autenticado
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            // Si no está autenticado, redirigir a LoginActivity
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-            return
-        }
-
         setContentView(R.layout.activity_main)
 
-        // Inicializar el fragmento AR
-        arFragment = supportFragmentManager.findFragmentById(R.id.activity_main__container__camera_area) as ArFragment
-
         viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+
+        arFragment = supportFragmentManager.findFragmentById(
+            R.id.activity_main__container__camera_area
+        ) as ArFragment
+
         arModelHelper = ArModelHelper(arFragment)
         fileHelper = FileHelper(this)
+
         photoViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
         photoHelper = PhotoHelper(arFragment, photoViewModel)
 
         setupPhotoButton()
-        setupSelectModelButton()
-        setupViewPhotosButton()
 
         viewModel.updateModelSource(ModelSource.ResourceId(R.raw.sas__cs2_agent_model_green))
 
@@ -89,6 +80,10 @@ class MainActivity : AppCompatActivity() {
             }
             tapCount++
         }
+
+        setupSelectModelButton()
+        setupViewPhotosButton()
+        setupLogoutButton()
 
         viewModel.modelSource.observe(this, Observer { modelSource ->
             modelSource?.let { source ->
@@ -117,6 +112,16 @@ class MainActivity : AppCompatActivity() {
         viewPhotosButton.setOnClickListener {
             val intent = Intent(this, PhotoListActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun setupLogoutButton() {
+        val logoutButton = findViewById<Button>(R.id.btnLogout)
+        logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -168,14 +173,4 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
-    override fun onDestroy() {
-        if (::arFragment.isInitialized) {
-            val fragmentManager = supportFragmentManager
-            val fragmentTransaction = fragmentManager.beginTransaction()
-            fragmentTransaction.remove(arFragment).commitAllowingStateLoss()
-        }
-        super.onDestroy()
-    }
 }
-

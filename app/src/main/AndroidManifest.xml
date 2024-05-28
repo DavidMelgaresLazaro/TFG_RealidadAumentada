@@ -53,6 +53,9 @@
 
         <activity android:name=".view.LoginActivity" />
 
+        <activity android:name=".view.PasswordResetActivity" />
+
+
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
