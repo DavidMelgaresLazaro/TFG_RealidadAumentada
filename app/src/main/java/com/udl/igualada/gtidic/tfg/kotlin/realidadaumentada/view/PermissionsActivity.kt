@@ -12,18 +12,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 
-
 class PermissionsActivity : AppCompatActivity() {
-
-    /*
-     * @TODO: La idea david es poner un loading bar, que muestre los mensajes de que se estan pidieno permisos, revisando la compatibilidad,...
-     */
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1
         internal const val MIN_OPENGL_VERSION = 3.0
-        private const val REQUEST_LOCATION_PERMISSION = 1
-
+        private const val REQUEST_LOCATION_PERMISSION = 2
+        private const val REQUEST_STORAGE_PERMISSION = 3
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,9 +41,15 @@ class PermissionsActivity : AppCompatActivity() {
         }
         if (!hasCameraPermission()) {
             requestCameraPermission()
+            return false
         }
         if (!hasReadExternalStoragePermission()) {
             requestReadExternalStoragePermission()
+            return false
+        }
+        if (!hasLocationPermission()) {
+            requestLocationPermission()
+            return false
         }
         return true
     }
@@ -73,16 +74,21 @@ class PermissionsActivity : AppCompatActivity() {
     private fun requestReadExternalStoragePermission() {
         ActivityCompat.requestPermissions(
             this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            PERMISSION_REQUEST_CODE
+            REQUEST_STORAGE_PERMISSION
         )
     }
-    private fun checkLocationPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION)
-        }
+
+    private fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            REQUEST_LOCATION_PERMISSION
+        )
     }
 
     private fun showOpenGlVersionNotSupportedMessage() {
@@ -96,5 +102,42 @@ class PermissionsActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (checkSystemSupport()) {
+                        startMainActivity()
+                    }
+                } else {
+                    Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+            REQUEST_LOCATION_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (checkSystemSupport()) {
+                        startMainActivity()
+                    }
+                } else {
+                    Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+            REQUEST_STORAGE_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (checkSystemSupport()) {
+                        startMainActivity()
+                    }
+                } else {
+                    Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 }
