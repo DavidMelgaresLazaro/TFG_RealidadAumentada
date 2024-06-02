@@ -22,6 +22,8 @@ class PermissionsActivity : AppCompatActivity() {
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1
         internal const val MIN_OPENGL_VERSION = 3.0
+        private const val REQUEST_LOCATION_PERMISSION = 1
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +75,14 @@ class PermissionsActivity : AppCompatActivity() {
             this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
             PERMISSION_REQUEST_CODE
         )
+    }
+    private fun checkLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION)
+        }
     }
 
     private fun showOpenGlVersionNotSupportedMessage() {

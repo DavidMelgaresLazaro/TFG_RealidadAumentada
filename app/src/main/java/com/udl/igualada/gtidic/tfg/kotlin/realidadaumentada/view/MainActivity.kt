@@ -9,9 +9,9 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -32,28 +32,21 @@ class MainActivity : AppCompatActivity() {
         private const val MAX_ALLOWED_TAPS = 1
     }
 
-    private lateinit var viewModel: MainActivityViewModel
+    private val viewModel: MainActivityViewModel by viewModels()
+    private val photoViewModel: PhotoViewModel by viewModels()
     private lateinit var arFragment: ArFragment
     private lateinit var arModelHelper: ArModelHelper
     private lateinit var fileHelper: FileHelper
     private var tapCount = 0
-    private lateinit var photoViewModel: PhotoViewModel
     private lateinit var photoHelper: PhotoHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-
-        arFragment = supportFragmentManager.findFragmentById(
-            R.id.activity_main__container__camera_area
-        ) as ArFragment
-
+        arFragment = supportFragmentManager.findFragmentById(R.id.activity_main__container__camera_area) as ArFragment
         arModelHelper = ArModelHelper(arFragment)
         fileHelper = FileHelper(this)
-
-        photoViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
         photoHelper = PhotoHelper(arFragment, photoViewModel)
 
         setupPhotoButton()

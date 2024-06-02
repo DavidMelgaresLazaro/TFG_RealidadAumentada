@@ -10,9 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.Photo
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view.PhotoDetailActivity
 
-class PhotoAdapter(private val context: Context, private val photoList: List<Map<String, Any>>) :
+class PhotoAdapter(private val context: Context, private val photoList: List<Photo>) :
     RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     inner class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,11 +29,11 @@ class PhotoAdapter(private val context: Context, private val photoList: List<Map
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        val photoData = photoList[position]
-        val url = photoData["url"] as? String
-        val filename = photoData["filename"] as? String
-        val comment = photoData["comment"] as? String
-        val modelName = photoData["modelName"] as? String
+        val photo = photoList[position]
+        val url = photo.url
+        val filename = photo.filename
+        val comment = photo.comment
+        val modelName = photo.modelName
 
         if (url != null) {
             Glide.with(context).load(url).into(holder.imageView)

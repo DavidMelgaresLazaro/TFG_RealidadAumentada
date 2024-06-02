@@ -9,12 +9,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.adapter.PhotoAdapter
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.Photo
 
 class PhotoListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var photoAdapter: PhotoAdapter
-    private lateinit var photoList: MutableList<Map<String, Any>>
+    private lateinit var photoList: MutableList<Photo>
     private lateinit var databaseReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +35,9 @@ class PhotoListActivity : AppCompatActivity() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     photoList.clear()
                     for (snapshot in dataSnapshot.children) {
-                        val photoData = snapshot.value as? Map<String, Any>
-                        if (photoData != null) {
-                            photoList.add(photoData)
+                        val photo = snapshot.getValue(Photo::class.java)
+                        if (photo != null) {
+                            photoList.add(photo)
                         }
                     }
                     photoAdapter.notifyDataSetChanged()

@@ -6,21 +6,29 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.User
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.UserViewModel
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
     private lateinit var resetPasswordLink: TextView
 
+    private val userViewModel: UserViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        auth = FirebaseAuth.getInstance()
 
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
@@ -49,9 +57,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser(email: String, password: String) {
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+        auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    val firebaseUser = auth.currentUser
+                    if (firebaseUser != null) {
+                        val user = User(
+                            email = firebaseUser.email!!,
+                            uid = firebaseUser.uid,
+                            displayName = firebaseUser.displayName,
+                            photoUrl = firebaseUser.photoUrl?.toString()
+                        )
+                        userViewModel.insert(user)
+                    }
+
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 } else {

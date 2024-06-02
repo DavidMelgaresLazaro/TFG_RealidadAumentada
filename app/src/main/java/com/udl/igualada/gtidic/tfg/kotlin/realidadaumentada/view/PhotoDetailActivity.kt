@@ -98,9 +98,7 @@ class PhotoDetailActivity : AppCompatActivity() {
             if (localUri != null) {
                 deletePhotoFromDevice(localUri!!)
             }
-            if (storageUrl != null) {
-                deletePhotoFromStorage(storageUrl!!)
-            }
+
             finish()
         }.addOnFailureListener {
             Toast.makeText(this, "Failed to delete photo metadata from database", Toast.LENGTH_SHORT).show()
@@ -111,30 +109,19 @@ class PhotoDetailActivity : AppCompatActivity() {
         val resolver: ContentResolver = contentResolver
         try {
             val photoUri = Uri.parse(uri)
-            resolver.delete(photoUri, null, null)
-            Toast.makeText(this, "Photo deleted from device", Toast.LENGTH_SHORT).show()
+            val deletedRows = resolver.delete(photoUri, null, null)
+            if (deletedRows > 0) {
+                Toast.makeText(this, "Photo deleted from device", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Failed to delete photo from device. No rows deleted.", Toast.LENGTH_SHORT).show()
+                Log.e("PhotoDetailActivity", "Failed to delete photo from device. No rows deleted.")
+            }
         } catch (e: Exception) {
             Toast.makeText(this, "Failed to delete photo from device", Toast.LENGTH_SHORT).show()
             Log.e("PhotoDetailActivity", "Failed to delete photo from device", e)
         }
     }
 
-    private fun deletePhotoFromStorage(url: String) {
-        try {
-            val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(url)
-            storageReference.metadata.addOnSuccessListener {
-                // If the metadata is successfully fetched, the file exists
-                storageReference.delete().addOnSuccessListener {
-                    Toast.makeText(this, "Photo deleted from storage", Toast.LENGTH_SHORT).show()
-                }.addOnFailureListener {
-                    Toast.makeText(this, "Failed to delete photo from storage", Toast.LENGTH_SHORT).show()
-                }
-            }.addOnFailureListener {
-                // If fetching metadata fails, the file does not exist
-                Toast.makeText(this, "Photo not found in storage", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: IllegalArgumentException) {
-            Toast.makeText(this, "Invalid storage URL", Toast.LENGTH_SHORT).show()
-        }
-    }
+
+
 }
