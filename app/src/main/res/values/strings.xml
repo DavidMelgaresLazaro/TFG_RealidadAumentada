@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">RealidadAumentada</string>
     <string name="something_is_not_right">Error</string>
-    <string name="open_gl_version_not_supported">Try other gl version</string>
     <string name="capture_photo">Capture Photo</string>
     <string name="take_photo" />
     <string name="take_photos">Take Photo</string>
@@ -9,6 +8,10 @@
     <string name="tomar_foto">Tomar Foto</string>
     <string name="bot_n_para_tomar_una_foto">Botón para tomar una foto</string>
     <string name="photo_saved_to_gallery">Se ha guardado la foto</string>
+    <string name="open_gl_version_not_supported">Versión de OpenGL no soportada</string>
+    <string name="permission_message">Se deben aceptar todos los permisos para poder utilizar la aplicación</string>
+
+
 
 
 </resources>
