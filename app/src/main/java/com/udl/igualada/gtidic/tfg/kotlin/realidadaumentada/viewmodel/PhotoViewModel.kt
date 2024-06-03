@@ -62,7 +62,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                         modelName = modelName,
                         size = getModelSize(anchorNode),
                         position = devicePosition.mapValues { it.value.toFloat() },
-                        distance = getHorizontalDistanceToModel(devicePosition.mapValues { it.value.toFloat() }, modelPosition),
+                        distance = getHorizontalDistanceToModel(devicePosition, modelPosition),
                         comment = comment,
                         localUri = imageUri.toString()
                     )
@@ -110,8 +110,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             val position = anchorNode.worldPosition
             mapOf(
-                "latitude" to position.x,
-                "longitude" to position.z
+                "x" to position.x,
+                "z" to position.z
             )
         }
     }
@@ -141,28 +141,22 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun getHorizontalDistanceToModel(
-        devicePosition: Map<String, Float>?,
+        devicePosition: Map<String, Double>?,
         modelPosition: Map<String, Float>?
     ): Float? {
         if (devicePosition == null || modelPosition == null) {
             return null
         }
 
+        // Assuming device position is in lat/lng and model position is in x/z (meters)
         val deviceLat = devicePosition["latitude"] ?: return null
         val deviceLng = devicePosition["longitude"] ?: return null
-        val modelLat = modelPosition["latitude"] ?: return null
-        val modelLng = modelPosition["longitude"] ?: return null
+        val modelX = modelPosition["x"] ?: return null
+        val modelZ = modelPosition["z"] ?: return null
 
-        val earthRadius = 6371000.0 // radio de la Tierra en metros
-
-        val dLat = Math.toRadians((modelLat - deviceLat).toDouble())
-        val dLng = Math.toRadians((modelLng - deviceLng).toDouble())
-        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(deviceLat.toDouble())) * Math.cos(Math.toRadians(modelLat.toDouble())) *
-                Math.sin(dLng / 2) * Math.sin(dLng / 2)
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
-        return (earthRadius * c).toFloat()
+        // Calculate distance in meters between two points in 2D space
+        val distance = Math.sqrt((modelX * modelX + modelZ * modelZ).toDouble()).toFloat()
+        return distance
     }
 
     private fun savePhotoToFirebase(photo: Photo) {
