@@ -8,7 +8,6 @@ import android.view.PixelCopy
 import android.widget.Toast
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ux.ArFragment
-import com.google.ar.sceneform.ux.TransformableNode
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.PhotoViewModel
 
 class PhotoHelper(
@@ -16,7 +15,7 @@ class PhotoHelper(
     private val photoViewModel: PhotoViewModel
 ) {
 
-    fun takePhoto(context: Context, anchorNode: AnchorNode, modelName: String?, comment: String) {
+    fun takePhoto(context: Context, anchorNode: AnchorNode, modelName: String, comment: String) {
         val arView = arFragment.arSceneView
 
         if (arView != null) {
@@ -25,16 +24,15 @@ class PhotoHelper(
             handlerThread.start()
             PixelCopy.request(arView, bitmap, { copyResult ->
                 if (copyResult == PixelCopy.SUCCESS) {
-                    val arFrame = arView.arFrame
-
-                    val devicePosition = photoViewModel.getDevicePosition(arFrame)
-
-                    if (devicePosition != null) {
-                        photoViewModel.savePhotoToGallery(context, bitmap, anchorNode, modelName, devicePosition, comment)
-                    } else {
-                        Toast.makeText(context, "Failed to get device position", Toast.LENGTH_SHORT).show()
+                    photoViewModel.getDeviceLocation { devicePosition ->
+                        if (devicePosition != null) {
+                            photoViewModel.savePhotoToGallery(context, bitmap, anchorNode, modelName, devicePosition, comment)
+                        } else {
+                            Toast.makeText(context, "Failed to get device position", Toast.LENGTH_SHORT).show()
+                        }
                     }
-
+                } else {
+                    Toast.makeText(context, "Failed to copy pixels", Toast.LENGTH_SHORT).show()
                 }
                 handlerThread.quitSafely()
             }, Handler(handlerThread.looper))

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.location.Location
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
@@ -11,24 +12,31 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import com.google.ar.core.Frame
+import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.ux.TransformableNode
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import java.io.ByteArrayOutputStream
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.Photo
+import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.repository.PhotoRepository
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val photosRef: DatabaseReference = database.getReference("photos")
-    private val coordinatesRef: DatabaseReference = database.getReference("coordinates")
+    private val repository: PhotoRepository = PhotoRepository(application)
+    private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application)
 
-    fun savePhotoToGallery(context: Context, bitmap: Bitmap, anchorNode: AnchorNode, modelName: String?, devicePosition: Map<String, Float>?, comment: String) {
+    fun savePhotoToGallery(
+        context: Context,
+        bitmap: Bitmap,
+        anchorNode: AnchorNode,
+        modelName: String?,
+        devicePosition: Map<String, Double>,
+        comment: String
+    ) {
         val filename = "${System.currentTimeMillis()}.png"
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
@@ -45,13 +53,30 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                 resolver.openOutputStream(imageUri)?.use { outputStream ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
-                    // Obtener la posición del modelo antes de subir la foto a Firebase Storage
                     val modelPosition = getModelPosition(anchorNode)
 
-                    // Save to Firebase Storage
-                    savePhotoToFirebase(bitmap, filename, modelName, anchorNode, modelPosition, devicePosition, comment, imageUri.toString())
+                    val photo = Photo(
+                        filename = filename,
+                        url = imageUri.toString(),
+                        time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date()),
+                        modelName = modelName,
+                        size = getModelSize(anchorNode),
+                        position = devicePosition.mapValues { it.value.toFloat() },
+                        distance = getHorizontalDistanceToModel(devicePosition, modelPosition),
+                        comment = comment,
+                        localUri = imageUri.toString()
+                    )
 
-                    // Update UI on the main thread
+                    viewModelScope.launch {
+                        try {
+                            repository.insert(photo)
+                            savePhotoToFirebase(photo)
+                            Log.d("PhotoViewModel", "Photo metadata saved to Firebase successfully")
+                        } catch (e: Exception) {
+                            Log.e("PhotoViewModel", "Failed to save photo metadata to Firebase", e)
+                        }
+                    }
+
                     Handler(Looper.getMainLooper()).post {
                         Toast.makeText(context, "Photo saved successfully", Toast.LENGTH_SHORT).show()
                     }
@@ -66,96 +91,88 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
-    private fun savePhotoToFirebase(bitmap: Bitmap, filename: String, modelName: String?, anchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?, comment: String, localUri: String) {
-        val storage = FirebaseStorage.getInstance()
-        val storageRef = storage.reference
-        val imagesRef: StorageReference = storageRef.child("images/$filename")
-
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        val data = baos.toByteArray()
-
-        val uploadTask = imagesRef.putBytes(data)
-        uploadTask.addOnFailureListener { exception ->
-            Log.e("PhotoViewModel", "Failed to upload photo to Firebase", exception)
-        }.addOnSuccessListener { taskSnapshot ->
-            imagesRef.downloadUrl.addOnSuccessListener { uri ->
-                val photoUrl = uri.toString()
-                savePhotoMetadataToDatabase(filename, photoUrl, modelName, anchorNode, modelPosition, devicePosition, comment, localUri)
-            }
-            Log.d("PhotoViewModel", "Photo uploaded to Firebase successfully: ${taskSnapshot.metadata?.path}")
-        }
-    }
-
-
-    private fun savePhotoMetadataToDatabase(filename: String, url: String, modelName: String?, anchorNode: AnchorNode?, modelPosition: Map<String, Float>?, devicePosition: Map<String, Float>?, comment: String, localUri: String) {
-        val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date())
-        val modelSize = anchorNode?.let { getModelSize(it) }
-        val horizontalDistance = getHorizontalDistanceToModel(devicePosition, modelPosition)
-
-        val photoMetadata = mutableMapOf(
-            "filename" to filename,
-            "url" to url,
-            "time" to timestamp,
-            "modelName" to modelName,
-            "size" to modelSize,
-            "position" to modelPosition,
-            "distance" to horizontalDistance,
-            "comment" to comment,
-            "localUri" to localUri
-        )
-
-        photosRef.push().setValue(photoMetadata)
-            .addOnSuccessListener {
-                Log.d("PhotoViewModel", "Photo metadata saved to database successfully")
-            }
-            .addOnFailureListener { exception ->
-                Log.e("PhotoViewModel", "Failed to save photo metadata to database", exception)
-            }
-    }
-
-
-    private fun getModelSize(anchorNode: AnchorNode): Map<String, Float> {
-        val transformableNode = anchorNode.children.firstOrNull { it is TransformableNode } as? TransformableNode
-        return transformableNode?.let {
-            val size = it.localScale
-            mapOf("width" to size.x, "height" to size.y, "depth" to size.z)
-        } ?: emptyMap()
-    }
-
-    private fun getModelPosition(anchorNode: AnchorNode): Map<String, Float>? {
-        val transformableNode = anchorNode.children.firstOrNull { it is TransformableNode } as? TransformableNode
-        return transformableNode?.let {
-            val position = it.worldPosition
-            mapOf("x" to position.x, "y" to position.y, "z" to position.z)
-        }
-    }
-
-    private fun getHorizontalDistanceToModel(devicePosition: Map<String, Float>?, modelPosition: Map<String, Float>?): Float {
-        if (devicePosition == null || modelPosition == null) {
-            return 0f
-        }
-
-        val deviceX = devicePosition["x"] ?: 0f
-        val deviceZ = devicePosition["z"] ?: 0f
-        val modelX = modelPosition["x"] ?: 0f
-        val modelZ = modelPosition["z"] ?: 0f
-
-        return kotlin.math.sqrt((deviceX - modelX) * (deviceX - modelX) + (deviceZ - modelZ) * (deviceZ - modelZ))
-    }
-
-    fun getDevicePosition(arFrame: Frame?): Map<String, Float>? {
-        val cameraPose = arFrame?.camera?.pose
-        val cameraPosition = cameraPose?.let {
-            val translation = it.translation
-            Triple(translation.get(0).toFloat(), translation.get(1).toFloat(), translation.get(2).toFloat())
-        }
-
-        return if (cameraPosition != null) {
-            mapOf("x" to cameraPosition.first, "y" to cameraPosition.second, "z" to cameraPosition.third)
+    private fun getModelSize(anchorNode: AnchorNode?): Map<String, Float> {
+        return if (anchorNode == null) {
+            emptyMap()
         } else {
-            null
+            val size = anchorNode.worldScale
+            mapOf(
+                "width" to size.x,
+                "height" to size.y,
+                "depth" to size.z
+            )
+        }
+    }
+
+    private fun getModelPosition(anchorNode: AnchorNode?): Map<String, Float> {
+        return if (anchorNode == null) {
+            emptyMap()
+        } else {
+            val position = anchorNode.worldPosition
+            mapOf(
+                "x" to position.x,
+                "z" to position.z
+            )
+        }
+    }
+
+    fun getDeviceLocation(callback: (Map<String, Double>?) -> Unit) {
+        try {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        val devicePosition = mapOf(
+                            "latitude" to location.latitude,
+                            "longitude" to location.longitude
+                        )
+                        callback(devicePosition)
+                    } else {
+                        callback(null)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("PhotoViewModel", "Failed to get device location", exception)
+                    callback(null)
+                }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            callback(null)
+        }
+    }
+
+    private fun getHorizontalDistanceToModel(
+        devicePosition: Map<String, Double>?,
+        modelPosition: Map<String, Float>?
+    ): Float? {
+        if (devicePosition == null || modelPosition == null) {
+            return null
+        }
+
+        // Assuming device position is in lat/lng and model position is in x/z (meters)
+        val deviceLat = devicePosition["latitude"] ?: return null
+        val deviceLng = devicePosition["longitude"] ?: return null
+        val modelX = modelPosition["x"] ?: return null
+        val modelZ = modelPosition["z"] ?: return null
+
+        // Calculate distance in meters between two points in 2D space
+        val distance = Math.sqrt((modelX * modelX + modelZ * modelZ).toDouble()).toFloat()
+        return distance
+    }
+
+    private fun savePhotoToFirebase(photo: Photo) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userEmail = currentUser.email?.replace(".", "_") ?: return
+            val databaseReference = FirebaseDatabase.getInstance().getReference("photos").child(userEmail)
+            databaseReference.child(photo.filename.replace(".", "_")).setValue(photo)
+                .addOnSuccessListener {
+                    Log.d("PhotoViewModel", "Photo metadata saved to Firebase successfully")
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("PhotoViewModel", "Failed to save photo metadata to Firebase", exception)
+                }
+        } else {
+            Log.e("PhotoViewModel", "User not authenticated, cannot save photo metadata to Firebase")
         }
     }
 }
