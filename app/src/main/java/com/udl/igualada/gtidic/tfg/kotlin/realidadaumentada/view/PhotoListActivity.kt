@@ -1,8 +1,10 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -21,6 +23,24 @@ class PhotoListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_list)
+
+        // Configurar la Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        // Configurar el título centrado
+        val toolbarTitle: TextView = findViewById(R.id.toolbar_title)
+        toolbarTitle.text = "Lista de Fotografías"
+
+        // Cambiar el color de la flecha de volver atrás
+        toolbar.navigationIcon?.setTint(getColor(android.R.color.black))
+
+        // Manejar evento de la flecha de volver atrás
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         recyclerView = findViewById(R.id.recyclerViewPhotos)
         recyclerView.layoutManager = LinearLayoutManager(this)
