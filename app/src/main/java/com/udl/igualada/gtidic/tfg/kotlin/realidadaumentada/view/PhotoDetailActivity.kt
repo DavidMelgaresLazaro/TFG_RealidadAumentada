@@ -1,8 +1,12 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
 import android.content.ContentResolver
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
@@ -68,13 +72,13 @@ class PhotoDetailActivity : AppCompatActivity() {
                             Glide.with(this@PhotoDetailActivity).load(storageUrl).into(photoDetailImageView)
                         }
 
-                        photoDetailFilename.text = filename
-                        photoDetailComment.text = comment ?: "No comment"
-                        photoDetailModelName.text = modelName ?: "Unknown"
-                        photoDetailTimestamp.text = timestamp ?: "Unknown"
-                        photoDetailSize.text = "Size: $size"
-                        photoDetailPosition.text = "Position: $position"
-                        photoDetailDistance.text = "Distance: $distance"
+                        photoDetailFilename.text = applyStyle("Nombre fichero:", filename)
+                        photoDetailComment.text = applyStyle("Comentario:", comment)
+                        photoDetailModelName.text = applyStyle("Nombre modelo:", modelName)
+                        photoDetailTimestamp.text = applyStyle("Fecha y hora:", timestamp)
+                        photoDetailSize.text = applyStyle("Tamaño:", size?.toString())
+                        photoDetailPosition.text = applyStyle("Posición:", position?.toString())
+                        photoDetailDistance.text = applyStyle("Distancia:", distance?.toString())
                     }
                 }
 
@@ -89,6 +93,12 @@ class PhotoDetailActivity : AppCompatActivity() {
                 deletePhoto(userEmail.replace(".", "_"), filename.replace(".", "_"))
             }
         }
+    }
+
+    private fun applyStyle(label: String, content: String?): SpannableString {
+        val spannableString = SpannableString("$label ${content ?: "N/A"}")
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), 0, label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannableString
     }
 
     private fun deletePhoto(userEmail: String, filename: String) {
@@ -121,7 +131,4 @@ class PhotoDetailActivity : AppCompatActivity() {
             Log.e("PhotoDetailActivity", "Failed to delete photo from device", e)
         }
     }
-
-
-
 }
