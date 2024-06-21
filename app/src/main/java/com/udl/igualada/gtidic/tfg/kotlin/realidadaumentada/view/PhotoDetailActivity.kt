@@ -1,6 +1,7 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
 import android.content.ContentResolver
+import android.content.DialogInterface
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -63,8 +65,8 @@ class PhotoDetailActivity : AppCompatActivity() {
                         val comment = photoData["comment"] as? String
                         val modelName = photoData["modelName"] as? String
                         val timestamp = photoData["time"] as? String
-                        val size = photoData["size"] as? Map<String, Float>
-                        val position = photoData["position"] as? Map<String, Float>
+                        val size = photoData["size"] as? Long
+                        val position = photoData["position"] as? Long
                         val distance = photoData["distance"] as? Double
                         localUri = photoData["localUri"] as? String
 
@@ -90,7 +92,7 @@ class PhotoDetailActivity : AppCompatActivity() {
 
         deletePhotoButton.setOnClickListener {
             if (filename != null && userEmail != null) {
-                deletePhoto(userEmail.replace(".", "_"), filename.replace(".", "_"))
+                showDeleteConfirmationDialog(userEmail.replace(".", "_"), filename.replace(".", "_"))
             }
         }
     }
@@ -99,6 +101,18 @@ class PhotoDetailActivity : AppCompatActivity() {
         val spannableString = SpannableString("$label ${content ?: "N/A"}")
         spannableString.setSpan(StyleSpan(Typeface.BOLD), 0, label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         return spannableString
+    }
+
+    private fun showDeleteConfirmationDialog(userEmail: String, filename: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("¿Estás seguro de que deseas eliminar esta foto?")
+            .setPositiveButton("Eliminar") { dialog, id ->
+                deletePhoto(userEmail, filename)
+            }
+            .setNegativeButton("Cancelar") { dialog, id ->
+                dialog.dismiss()
+            }
+        builder.create().show()
     }
 
     private fun deletePhoto(userEmail: String, filename: String) {
@@ -131,4 +145,5 @@ class PhotoDetailActivity : AppCompatActivity() {
             Log.e("PhotoDetailActivity", "Failed to delete photo from device", e)
         }
     }
+
 }
