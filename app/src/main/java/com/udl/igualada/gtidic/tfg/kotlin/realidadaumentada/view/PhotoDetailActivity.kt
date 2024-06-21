@@ -1,7 +1,6 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
 import android.content.ContentResolver
-import android.content.DialogInterface
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -15,12 +14,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
-import java.io.File
 
 class PhotoDetailActivity : AppCompatActivity() {
 
@@ -41,6 +40,21 @@ class PhotoDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_detail)
+
+        // Configurar la Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbar.title = "Información de la Fotografía"
+
+        // Cambiar el color de la flecha de volver atrás
+        toolbar.navigationIcon?.setTint(getColor(android.R.color.black))
+
+        // Manejar evento de la flecha de volver atrás
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         photoDetailImageView = findViewById(R.id.photoDetailImageView)
         photoDetailComment = findViewById(R.id.photoDetailComment)
@@ -145,5 +159,5 @@ class PhotoDetailActivity : AppCompatActivity() {
             Log.e("PhotoDetailActivity", "Failed to delete photo from device", e)
         }
     }
-
 }
+
