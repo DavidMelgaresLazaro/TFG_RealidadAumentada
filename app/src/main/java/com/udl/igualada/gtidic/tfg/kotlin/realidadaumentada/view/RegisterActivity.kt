@@ -16,6 +16,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var editTextEmail: EditText
+    private lateinit var editTextConfirmEmail: EditText
     private lateinit var editTextPassword: EditText
     private lateinit var buttonRegister: Button
     private lateinit var buttonGoToLogin: Button
@@ -29,18 +30,24 @@ class RegisterActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         editTextEmail = findViewById(R.id.editTextEmail)
+        editTextConfirmEmail = findViewById(R.id.editTextConfirmEmail)
         editTextPassword = findViewById(R.id.editTextPassword)
         buttonRegister = findViewById(R.id.buttonRegister)
         buttonGoToLogin = findViewById(R.id.buttonGoToLogin)
 
         buttonRegister.setOnClickListener {
             val email = editTextEmail.text.toString().trim()
+            val confirmEmail = editTextConfirmEmail.text.toString().trim()
             val password = editTextPassword.text.toString().trim()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                registerUser(email, password)
+            if (email.isNotEmpty() && confirmEmail.isNotEmpty() && password.isNotEmpty()) {
+                if (email == confirmEmail) {
+                    registerUser(email, password)
+                } else {
+                    Toast.makeText(this, "Los correos electrónicos no coinciden", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -64,11 +71,11 @@ class RegisterActivity : AppCompatActivity() {
                         userViewModel.insert(user)
                     }
 
-                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, LoginActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Registro fallido: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
