@@ -10,6 +10,8 @@
     <string name="photo_saved_to_gallery">Se ha guardado la foto</string>
     <string name="open_gl_version_not_supported">Versión de OpenGL no soportada</string>
     <string name="permission_message">Se deben aceptar todos los permisos para poder utilizar la aplicación</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
 

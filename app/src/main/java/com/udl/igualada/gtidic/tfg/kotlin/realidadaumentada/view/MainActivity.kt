@@ -6,12 +6,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -25,7 +31,7 @@ import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.viewmodel.PhotoViewM
 import java.io.File
 import java.io.IOException
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object {
         private const val PICK_MODEL_REQUEST_CODE = 2
         private const val TAG = "MainActivity"
@@ -39,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fileHelper: FileHelper
     private var tapCount = 0
     private lateinit var photoHelper: PhotoHelper
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,9 +82,7 @@ class MainActivity : AppCompatActivity() {
             tapCount++
         }
 
-        setupSelectModelButton()
-        setupViewPhotosButton()
-        setupLogoutButton()
+        setupNavigationDrawer()
 
         viewModel.modelSource.observe(this, Observer { modelSource ->
             modelSource?.let { source ->
@@ -93,49 +99,8 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun setupSelectModelButton() {
-        val selectModelButton = findViewById<Button>(R.id.btnSelectModel)
-        selectModelButton.setOnClickListener {
-            startActivityForResult(fileHelper.openFileSelector(), PICK_MODEL_REQUEST_CODE)
-        }
-    }
-
-    private fun setupViewPhotosButton() {
-        val viewPhotosButton = findViewById<Button>(R.id.buttonViewPhotos)
-        viewPhotosButton.setOnClickListener {
-            val intent = Intent(this, PhotoListActivity::class.java)
-            startActivity(intent)
-        }
-    }
-
-    private fun setupLogoutButton() {
-        val logoutButton = findViewById<Button>(R.id.btnLogout)
-        logoutButton.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_MODEL_REQUEST_CODE && resultCode == RESULT_OK) {
-            data?.data?.let { uri ->
-                try {
-                    val filePath = fileHelper.getFilePathFromUri(uri)
-                    viewModel.updateModelSource(ModelSource.UriSource(Uri.fromFile(File(filePath))))
-                } catch (e: IOException) {
-                    Toast.makeText(this, "Failed to load model", Toast.LENGTH_SHORT).show()
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
-
     private fun setupPhotoButton() {
-        val photoButton = findViewById<Button>(R.id.btnTakePhoto)
+        val photoButton = findViewById<ImageButton>(R.id.btnTakePhoto)
         photoButton.setOnClickListener {
             val anchorNode = viewModel.anchorNode.value
             val modelName = viewModel.modelName.value
@@ -165,5 +130,57 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    private fun setupNavigationDrawer() {
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        navView.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_select_model -> {
+                startActivityForResult(fileHelper.openFileSelector(), PICK_MODEL_REQUEST_CODE)
+            }
+            R.id.nav_view_photos -> {
+                val intent = Intent(this, PhotoListActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
+        drawerLayout.closeDrawers()
+        return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PICK_MODEL_REQUEST_CODE && resultCode == RESULT_OK) {
+            data?.data?.let { uri ->
+                try {
+                    val filePath = fileHelper.getFilePathFromUri(uri)
+                    viewModel.updateModelSource(ModelSource.UriSource(Uri.fromFile(File(filePath))))
+                } catch (e: IOException) {
+                    Toast.makeText(this, "Failed to load model", Toast.LENGTH_SHORT).show()
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 }
