@@ -1,20 +1,25 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
 import android.content.ContentResolver
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
-import java.io.File
 
 class PhotoDetailActivity : AppCompatActivity() {
 
@@ -35,6 +40,21 @@ class PhotoDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_detail)
+
+        // Configurar la Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbar.title = "Información de la Fotografía"
+
+        // Cambiar el color de la flecha de volver atrás
+        toolbar.navigationIcon?.setTint(getColor(android.R.color.black))
+
+        // Manejar evento de la flecha de volver atrás
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         photoDetailImageView = findViewById(R.id.photoDetailImageView)
         photoDetailComment = findViewById(R.id.photoDetailComment)
@@ -68,13 +88,13 @@ class PhotoDetailActivity : AppCompatActivity() {
                             Glide.with(this@PhotoDetailActivity).load(storageUrl).into(photoDetailImageView)
                         }
 
-                        photoDetailFilename.text = filename
-                        photoDetailComment.text = comment ?: "No comment"
-                        photoDetailModelName.text = modelName ?: "Unknown"
-                        photoDetailTimestamp.text = timestamp ?: "Unknown"
-                        photoDetailSize.text = "Size: $size"
-                        photoDetailPosition.text = "Position: $position"
-                        photoDetailDistance.text = "Distance: $distance"
+                        photoDetailFilename.text = applyStyle("Nombre fichero:", filename)
+                        photoDetailComment.text = applyStyle("Comentario:", comment)
+                        photoDetailModelName.text = applyStyle("Nombre modelo:", modelName)
+                        photoDetailTimestamp.text = applyStyle("Fecha y hora:", timestamp)
+                        photoDetailSize.text = applyStyle("Tamaño:", "${size?.toString() ?: "N/A"} %")
+                        photoDetailPosition.text = applyStyle("Posición:", position?.toString())
+                        photoDetailDistance.text = applyStyle("Distancia:", "${distance?.toString() ?: "N/A"} m")
                     }
                 }
 
@@ -86,9 +106,27 @@ class PhotoDetailActivity : AppCompatActivity() {
 
         deletePhotoButton.setOnClickListener {
             if (filename != null && userEmail != null) {
-                deletePhoto(userEmail.replace(".", "_"), filename.replace(".", "_"))
+                showDeleteConfirmationDialog(userEmail.replace(".", "_"), filename.replace(".", "_"))
             }
         }
+    }
+
+    private fun applyStyle(label: String, content: String?): SpannableString {
+        val spannableString = SpannableString("$label ${content ?: "N/A"}")
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), 0, label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannableString
+    }
+
+    private fun showDeleteConfirmationDialog(userEmail: String, filename: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("¿Estás seguro de que deseas eliminar esta foto?")
+            .setPositiveButton("Eliminar") { dialog, id ->
+                deletePhoto(userEmail, filename)
+            }
+            .setNegativeButton("Cancelar") { dialog, id ->
+                dialog.dismiss()
+            }
+        builder.create().show()
     }
 
     private fun deletePhoto(userEmail: String, filename: String) {
@@ -121,7 +159,4 @@ class PhotoDetailActivity : AppCompatActivity() {
             Log.e("PhotoDetailActivity", "Failed to delete photo from device", e)
         }
     }
-
-
-
 }

@@ -43,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 loginUser(email, password)
             } else {
-                Toast.makeText(this, "Please enter your email and password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Por favor, introduzca su correo electrónico y contraseña", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error de inicio de sesión", Toast.LENGTH_SHORT).show()
                 }
             }
     }

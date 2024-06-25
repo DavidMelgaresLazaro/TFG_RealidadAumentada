@@ -1,5 +1,6 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.adapter
 
+
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.R
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.Photo
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view.PhotoDetailActivity
+
 
 class PhotoAdapter(private val context: Context, private val photoList: List<Photo>) :
     RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
