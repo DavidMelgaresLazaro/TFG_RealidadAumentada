@@ -173,9 +173,9 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-// Function to get current date and time in Spain
+
 fun getCurrentDateTimeInSpain(): String {
     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-    sdf.timeZone = TimeZone.getTimeZone("Europe/Madrid")
+    sdf.timeZone = TimeZone.getDefault()
     return sdf.format(Date())
 }
