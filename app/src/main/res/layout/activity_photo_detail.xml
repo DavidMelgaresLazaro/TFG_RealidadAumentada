@@ -115,7 +115,7 @@
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:paddingBottom="8dp"
-                    android:text="Tamaño: 1234 KB" />
+                    android:text="Tamaño: 1%" />
 
                 <TextView
                     android:id="@+id/photoDetailPosition"

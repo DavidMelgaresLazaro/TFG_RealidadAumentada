@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.ux.TransformableNode
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.model.Photo
@@ -58,7 +59,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
                     val photo = Photo(
                         filename = filename,
                         url = imageUri.toString(),
-                        time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(Date()),
+                        time = getCurrentDateTimeInSpain(), // Updated here
                         modelName = modelName,
                         size = getModelSize(anchorNode),
                         position = devicePosition.mapValues { it.value.toFloat() },
@@ -91,17 +92,12 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun getModelSize(anchorNode: AnchorNode?): Map<String, Float> {
-        return if (anchorNode == null) {
-            emptyMap()
-        } else {
-            val size = anchorNode.worldScale
-            mapOf(
-                "width" to size.x,
-                "height" to size.y,
-                "depth" to size.z
-            )
-        }
+    private fun getModelSize(anchorNode: AnchorNode): Map<String, Float> {
+        val transformableNode = anchorNode.children.firstOrNull { it is TransformableNode } as? TransformableNode
+        return transformableNode?.let {
+            val size = it.localScale
+            mapOf("width" to size.x)
+        } ?: emptyMap()
     }
 
     private fun getModelPosition(anchorNode: AnchorNode?): Map<String, Float> {
@@ -175,4 +171,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             Log.e("PhotoViewModel", "User not authenticated, cannot save photo metadata to Firebase")
         }
     }
+}
+
+// Function to get current date and time in Spain
+fun getCurrentDateTimeInSpain(): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    sdf.timeZone = TimeZone.getTimeZone("Europe/Madrid")
+    return sdf.format(Date())
 }

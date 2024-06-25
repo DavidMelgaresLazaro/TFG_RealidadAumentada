@@ -79,8 +79,8 @@ class PhotoDetailActivity : AppCompatActivity() {
                         val comment = photoData["comment"] as? String
                         val modelName = photoData["modelName"] as? String
                         val timestamp = photoData["time"] as? String
-                        val size = photoData["size"] as? Long
-                        val position = photoData["position"] as? Long
+                        val size = photoData["size"] as? Map<String, Float>
+                        val position = photoData["position"] as? Map<String, Float>
                         val distance = photoData["distance"] as? Double
                         localUri = photoData["localUri"] as? String
 
@@ -92,9 +92,9 @@ class PhotoDetailActivity : AppCompatActivity() {
                         photoDetailComment.text = applyStyle("Comentario:", comment)
                         photoDetailModelName.text = applyStyle("Nombre modelo:", modelName)
                         photoDetailTimestamp.text = applyStyle("Fecha y hora:", timestamp)
-                        photoDetailSize.text = applyStyle("Tamaño:", size?.toString())
+                        photoDetailSize.text = applyStyle("Tamaño:", "${size?.toString() ?: "N/A"} %")
                         photoDetailPosition.text = applyStyle("Posición:", position?.toString())
-                        photoDetailDistance.text = applyStyle("Distancia:", distance?.toString())
+                        photoDetailDistance.text = applyStyle("Distancia:", "${distance?.toString() ?: "N/A"} m")
                     }
                 }
 
@@ -160,4 +160,3 @@ class PhotoDetailActivity : AppCompatActivity() {
         }
     }
 }
-
