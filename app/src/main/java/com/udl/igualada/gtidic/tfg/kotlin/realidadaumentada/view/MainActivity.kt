@@ -47,11 +47,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var photoHelper: PhotoHelper
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
+        auth = FirebaseAuth.getInstance()
+
+        // Verificar si hay un usuario autenticado en Firebase
+        if (auth.currentUser == null) {
+            // No hay usuario autenticado, redirigir a LoginActivity
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        } else {
+            // Hay un usuario autenticado, inicializar la actividad principal
+            setContentView(R.layout.activity_main)
+            initMainActivity()
+        }
+    }
+
+    private fun initMainActivity() {
         arFragment = supportFragmentManager.findFragmentById(R.id.activity_main__container__camera_area) as ArFragment
         arModelHelper = ArModelHelper(arFragment)
         fileHelper = FileHelper(this)
@@ -131,8 +146,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         dialog.show()
     }
-
-
 
     private fun setupNavigationDrawer() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
