@@ -1,5 +1,6 @@
 package com.udl.igualada.gtidic.tfg.kotlin.realidadaumentada.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -12,6 +13,7 @@ class PasswordResetActivity : AppCompatActivity() {
 
     private lateinit var emailEditText: EditText
     private lateinit var resetPasswordButton: Button
+    private lateinit var goToLoginButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +21,7 @@ class PasswordResetActivity : AppCompatActivity() {
 
         emailEditText = findViewById(R.id.emailEditText)
         resetPasswordButton = findViewById(R.id.resetPasswordButton)
+        goToLoginButton = findViewById(R.id.goToLoginButton)
 
         resetPasswordButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
@@ -27,6 +30,12 @@ class PasswordResetActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        goToLoginButton.setOnClickListener {
+            // Intent para ir a la pantalla de inicio de sesión
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
     }
 
