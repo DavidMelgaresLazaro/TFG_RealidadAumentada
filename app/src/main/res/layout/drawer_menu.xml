@@ -3,13 +3,13 @@
     <item
         android:id="@+id/nav_select_model"
         android:icon="@drawable/ic_select_model"
-        android:title="Select Model" />
+        android:title="Seleccionar Modelo" />
     <item
         android:id="@+id/nav_view_photos"
         android:icon="@drawable/ic_view_photos"
-        android:title="View Photos" />
+        android:title="Ver Fotos" />
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout"
-        android:title="Logout" />
+        android:title="Cerrar Sesión" />
 </menu>

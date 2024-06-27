@@ -29,7 +29,7 @@
             android:id="@+id/buttonSubmit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit"
+            android:text="Enviar"
             android:backgroundTint="@color/text_primary"
             android:textColor="@android:color/white"
             android:padding="12dp"
