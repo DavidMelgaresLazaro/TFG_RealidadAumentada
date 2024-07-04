@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setupPhotoButton()
 
-        viewModel.updateModelSource(ModelSource.ResourceId(R.raw.sas__cs2_agent_model_green))
+        viewModel.updateModelSource(ModelSource.ResourceId(R.raw.lamp))
 
         arFragment.setOnTapArPlaneListener { hitResult, plane, _ ->
             if (tapCount >= MAX_ALLOWED_TAPS) {
