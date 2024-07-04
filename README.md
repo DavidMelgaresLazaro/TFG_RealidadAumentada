@@ -27,5 +27,3 @@ Esta aplicación móvil para Android utiliza la tecnología de realidad aumentad
 
 5. Gestiona tus fotos visualizando, detallando y eliminando las capturas realizadas.
 
-## Modelos 3D
-
